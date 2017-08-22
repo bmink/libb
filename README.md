@@ -14,3 +14,6 @@ over the years and use in most of my projects.
 * barr_t is an array library. It manages its own memory and growth. In addition
   to adding and accessing elements, it can be sorted and searched easily.
 
+* btime.[ch] contains utilities for time stucture (time_t, struct timeval,
+  struct timespec) manipulation, comparison, addition/substraction etc.
+
