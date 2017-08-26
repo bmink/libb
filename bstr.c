@@ -367,5 +367,23 @@ xstrdup(const char *str)
 }
 
 
+void *
+memdup(const void *mem, size_t siz)
+{
+	void	*memd;
+
+	if(mem == NULL || siz == 0)
+		return NULL;
+
+	memd = malloc(siz);
+	if(memd == NULL)
+		return NULL;
+
+	memcpy(memd, mem, siz);
+
+	return memd;
+}
+
+
 
 

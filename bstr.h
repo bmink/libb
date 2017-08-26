@@ -51,5 +51,6 @@ int xstrbeginswith(const char *, const char *);
 int xstrbeginswithn(const char *, const char *);
 int xstrmakefixedwidth(const char *, char *, int);
 char *xstrdup(const char *);
+void *memdup(const void *, size_t);
  
 #endif
