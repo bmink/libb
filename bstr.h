@@ -39,6 +39,8 @@ int bstrbeginswith(bstr_t *, const char *);
 
 int btofile(const char *, bstr_t *);
 int btofilep(FILE *, bstr_t *);
+int bfromfile(bstr_t *, const char *);
+int bfromfilep(bstr_t *, FILE *);
 
 int xfree(char **);
 int xstrcmp(const char *, const char *);

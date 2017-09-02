@@ -431,6 +431,53 @@ btofile(const char *filen, bstr_t *bstr)
 
 
 int
+bfromfilep(bstr_t *bstr, FILE *f)
+{
+	int		ret;
+	unsigned char	byte;
+
+	if(f == NULL || bstr == NULL)
+		return EINVAL;
+
+	while(1) {
+		ret = fgetc(f);
+
+		if(ret == EOF)
+			break;
+
+		byte = (unsigned char) ret;
+		ret = bmemcat(bstr, (char *) &byte, 1);
+		if(ret != 0)
+			return ret;
+	}
+
+
+	return 0;
+}
+
+
+int
+bfromfile(bstr_t *bstr, const char *filen)
+{
+	FILE	*f;
+	int	ret;
+
+	if(xstrempty(filen) || bstrempty(bstr))
+		return EINVAL;
+
+	f = fopen(filen, "r");
+	if(f == NULL)
+		return ENOEXEC;
+
+	ret = bfromfilep(bstr, f); 
+
+	fclose(f);
+
+	return ret;
+}
+
+
+int
 xatoi(const char *str)
 {
 	if(xstrempty(str))
