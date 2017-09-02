@@ -385,5 +385,47 @@ memdup(const void *mem, size_t siz)
 }
 
 
+int
+btofilep(FILE *f, bstr_t *bstr)
+{
+	char	*buf;
+	size_t	len;
+	int	ret;
 
+	if(f == NULL || bstrempty(bstr))
+		return EINVAL;
+
+	buf = bget(bstr);
+	if(buf == NULL)
+		return ENOENT;
+
+	len = bstrlen(bstr);
+
+	ret = fwrite(buf, 1, len, f);
+	if(ret != len)
+		return ENOEXEC;
+
+	return 0;
+}
+
+
+int
+btofile(const char *filen, bstr_t *bstr)
+{
+	FILE	*f;
+	int	ret;
+
+	if(xstrempty(filen) || bstrempty(bstr))
+		return EINVAL;
+
+	f = fopen(filen, "w");
+	if(f == NULL)
+		return ENOEXEC;
+
+	ret = btofilep(f, bstr); 
+
+	fclose(f);
+
+	return ret;
+}
 

@@ -10,6 +10,7 @@
 #define BSTR_H
 
 #include <stdlib.h>
+#include <stdio.h>
 
 
 typedef struct bstr {
@@ -36,6 +37,8 @@ int bstrtolower(bstr_t *);
 int bstrendswith(bstr_t *, const char *);
 int bstrbeginswith(bstr_t *, const char *);
 
+int btofile(const char *, bstr_t *);
+int btofilep(FILE *, bstr_t *);
 
 int xfree(char **);
 int xstrcmp(const char *, const char *);
