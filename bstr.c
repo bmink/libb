@@ -429,3 +429,13 @@ btofile(const char *filen, bstr_t *bstr)
 	return ret;
 }
 
+
+int
+xatoi(const char *str)
+{
+	if(xstrempty(str))
+		return 0;
+
+	return atoi(str);
+}
+
