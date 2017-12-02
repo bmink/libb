@@ -457,6 +457,25 @@ bfromfilep(bstr_t *bstr, FILE *f)
 
 
 int
+bfromfiled(bstr_t *bstr, int filedesc)
+{
+	FILE	*f;
+	int	ret;
+
+	f = fdopen(filedesc, "r");
+	if(f == NULL)
+		return EINVAL;
+
+	ret = bfromfilep(bstr, f);
+	
+	fclose(f);
+
+	return ret;
+
+}
+
+
+int
 bfromfile(bstr_t *bstr, const char *filen)
 {
 	FILE	*f;
