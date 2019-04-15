@@ -1,27 +1,67 @@
-#include <syslog.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <stdarg.h>
+#include <sys/stat.h>
 #include "blog.h"
 #include "bstr.h"
-#include "bint.h"
+#include "bfs.h"
 
 #define BLOG_STATE_NOT_INITIALIZED	0
 #define BLOG_STATE_INITIALIZED		1
 
 int blog_state = BLOG_STATE_NOT_INITIALIZED;
 
+FILE	*blog_f = NULL;
+
 
 int
 blog_init(const char *execn)
 {
+	bstr_t	*dir;
+	char	*home;
+	int	err;
+	int	ret;
+	mode_t	bits;
+
+	err = 0;
+	dir = NULL;
+	home = NULL;
+
+	bits = S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP |
+	    S_IROTH | S_IXOTH;
+
 	if(xstrempty(execn))
 		return EINVAL;
 
-	openlog(execn, LOG_PID, LOG_USER);
+	home = getenv("HOME");
+	if(xstrempty(home))
+		return ENOEXEC;
+
+	if(!bfs_isdir(home))
+		return ENOENT;
+
+	dir = binit();
+	if(dir == NULL)
+		return ENOMEM;
+
+	bprintf(dir, "%s/log", home);
+
+	if(!bfs_isdir(bget(dir))) {
+		ret = mkdir(bget(dir), bits);
+		if(ret != 0) {
+			err = errno;
+			goto end_label;
+		}
+	}
 
 	blog_state = BLOG_STATE_INITIALIZED;
+
+end_label:
+
+	if(dir)
+		buninit(&dir);
 	
-	return 0;
+	return err;
 }
 
 
@@ -31,7 +71,7 @@ blog_uninit()
 	if(blog_state != BLOG_STATE_INITIALIZED)
 		return ENOEXEC;
 
-	closelog();
+	fclose(blog_f);
 
 	blog_state = BLOG_STATE_NOT_INITIALIZED;
 
@@ -40,26 +80,30 @@ blog_uninit()
 
 
 void
-blog_logf(int level, const char *fmt, ...)
+blog_logf(const char *func, const char *fmt, ...)
 {
 	va_list		arglist;
-	int		pri;
+	bstr_t		*nfmt;
 
 	if(blog_state != BLOG_STATE_INITIALIZED)
 		return;
 
-	switch(level) {
-	case BLOG_INFO:
-		pri = LOG_INFO;
-		break;
-	case BLOG_ERR:
-		pri = LOG_ERR;
-		break;
-	default: /* Unknown level? */
+	if(xstrempty(func) || xstrempty(fmt))
+		return;
+
+	nfmt = binit();
+	if(nfmt == NULL) {
+	//	syslog(LOG_ERR, "Could not allocate bstr in blog!");
 		return;
 	}
 
+	bprintf(nfmt, "<%s> %s", func, fmt);
+
 	va_start(arglist, fmt);
-	vsyslog(pri, fmt, arglist);
+	//vsyslog(LOG_NOTICE, bget(nfmt), arglist);
         va_end(arglist);
+
+	printf("%s\n", bget(nfmt));	
+
+	buninit(&nfmt);
 }

@@ -1,7 +1,7 @@
 CFLAGS = -g -Wall
 
-libb: bstr.o barr.o btime.o bcurl.o blog.o bint.o
-	ar rc libb.a bstr.o barr.o btime.o bcurl.o blog.o bint.o \
+libb: bstr.o barr.o btime.o bcurl.o blog.o bint.o bfs.o
+	ar rc libb.a bstr.o barr.o btime.o bcurl.o blog.o bint.o bfs.o \
 		&& ranlib libb.a
 
 install: libb
