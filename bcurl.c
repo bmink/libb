@@ -27,14 +27,14 @@ bcurl_url_fetch(const char *url, bstr_t *doc)
 	mycurl = NULL;
 
 	if(xstrempty(url) || doc == NULL) {
-		blog_err("Bad arguments");
+		blogf("Bad arguments");
 		return EINVAL;
 	}
 
 
         mycurl = curl_easy_init();
         if(mycurl == NULL) {
-                blog_err("Could not initialize libcurl_easy\n");
+                blogf("Could not initialize libcurl_easy\n");
                 return ENOEXEC;
         }
 

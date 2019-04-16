@@ -129,3 +129,34 @@ btimespec_addns(struct timespec *ts, long ns)
 }
 
 
+#define BTIME_MAXBUF	1024
+
+int
+bgetdate(bstr_t *bstr)
+{
+	char		buf[BTIME_MAXBUF];
+	time_t		now;
+	struct tm	tm;
+	int		ret;
+
+	if(bstrempty(bstr))
+		return EINVAL;
+
+	(void) time(&now);
+	gmtime_r(&now, &tm);
+
+	memset(buf, 0, BTIME_MAXBUF);
+
+	/* Date will be formatted "YYYYMMDD" */
+	ret = strftime(buf, BTIME_MAXBUF, "%Y%m%d", &tm);
+	if(ret == 0)
+		return ENOEXEC;	
+
+	ret = bstrcat(bstr, buf);
+	if(ret != 0)
+		return ENOEXEC;
+
+	return 0;
+}
+
+

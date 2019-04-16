@@ -23,10 +23,12 @@ blog_init(const char *execn, int mode)
 	char	*home;
 	int	err;
 	int	ret;
+	bstr_t	*date;
 
 	err = 0;
 	dir = NULL;
 	home = NULL;
+	date = NULL;
 
 	if(xstrempty(execn))
 		return EINVAL;
@@ -65,8 +67,23 @@ blog_init(const char *execn, int mode)
 		goto end_label;
 	}
 
-	bprintf(blog_fnam, "%s/log/%s/", home, execn, );
+	date = binit();
+	if(date == NULL) {
+		err = ENOMEM;
+		goto end_label;
+	}
 
+	ret = bgetdate(date);
+	if(ret != 0) {
+		err = ret;
+		goto end_label;
+	}
+
+	if(mode == BLOG_MODE_SINGLE) {
+		bprintf(blog_fnam, "%s/log/%s/%s", home, execn, date);
+		printf("%s\n", bget(blog_fnam));
+		exit(0);
+	}
 
 	blog_f = fopen();
 
@@ -85,6 +102,9 @@ end_label:
 			fclose(blog_f);
 			blog_f = NULL;
 		}
+	}
+	if(date)
+		buninit(&date);
 	
 	return err;
 }

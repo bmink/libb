@@ -11,7 +11,7 @@
  * Multi mode: each instance writes to its own file.
  * 
  * If there will be multiple processes running at the same time, use multi
- * mode, but you will need to deal with more logfiles. */
+ * mode, but you will need to deal with more logfiles.
  */
 #define BLOG_MODE_SINGLE	0
 #define BLOG_MODE_MULTI		1
