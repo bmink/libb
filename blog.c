@@ -1,7 +1,8 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include "blog.h"
 #include "bstr.h"
 #include "bfs.h"
@@ -11,24 +12,21 @@
 
 int blog_state = BLOG_STATE_NOT_INITIALIZED;
 
-FILE	*blog_f = NULL;
+bstr_t	*blog_fnam = NULL;
+FILE *blog_f = NULL;
 
 
 int
-blog_init(const char *execn)
+blog_init(const char *execn, int mode)
 {
 	bstr_t	*dir;
 	char	*home;
 	int	err;
 	int	ret;
-	mode_t	bits;
 
 	err = 0;
 	dir = NULL;
 	home = NULL;
-
-	bits = S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP |
-	    S_IROTH | S_IXOTH;
 
 	if(xstrempty(execn))
 		return EINVAL;
@@ -46,13 +44,32 @@ blog_init(const char *execn)
 
 	bprintf(dir, "%s/log", home);
 
-	if(!bfs_isdir(bget(dir))) {
-		ret = mkdir(bget(dir), bits);
-		if(ret != 0) {
-			err = errno;
-			goto end_label;
-		}
+	ret = bfs_mkdir(bget(dir));
+	if(ret != 0 && ret != EEXIST) {
+		err = errno;
+		goto end_label;
 	}
+
+	bclear(dir);
+	bprintf(dir, "%s/log/%s", home, execn);
+
+	ret = bfs_mkdir(bget(dir));
+	if(ret != 0 && ret != EEXIST) {
+		err = errno;
+		goto end_label;
+	}
+
+	blog_fnam = binit();
+	if(blog_fnam == NULL) {
+		err = ENOMEM;
+		goto end_label;
+	}
+
+	bprintf(blog_fnam, "%s/log/%s/", home, execn, );
+
+
+	blog_f = fopen();
+
 
 	blog_state = BLOG_STATE_INITIALIZED;
 
@@ -60,6 +77,14 @@ end_label:
 
 	if(dir)
 		buninit(&dir);
+	if(err != 0) {
+		if(blog_fnam != NULL) {
+			buninit(&blog_fnam);
+		}
+		if(blog_f != NULL) {
+			fclose(blog_f);
+			blog_f = NULL;
+		}
 	
 	return err;
 }
@@ -72,6 +97,9 @@ blog_uninit()
 		return ENOEXEC;
 
 	fclose(blog_f);
+	blog_f = NULL;
+
+	buninit(&blog_fnam);
 
 	blog_state = BLOG_STATE_NOT_INITIALIZED;
 

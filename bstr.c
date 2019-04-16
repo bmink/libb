@@ -156,15 +156,6 @@ bstrempty(bstr_t *bstr)
 
 
 int
-bstrtrim(bstr_t *bstr)
-{
-	if(bstr == NULL)
-		return EINVAL;
-	return xstrtrim(bget(bstr));
-}
-
-
-int
 bstrtolower(bstr_t *bstr)
 {
 	if(bstr == NULL)
@@ -217,29 +208,6 @@ xstrncasecmp(const char *str1, const char *str2, size_t n)
 		return -1;
 	return strncasecmp(str1, str2, n);
 
-}
-
-
-int
-xstrtrim(char *str)
-{
-	char	*ch;
-
-	if(xstrempty(str))
-		return EINVAL;
-
-        /* Remove new line at end. */
-	ch = &str[strlen(str) - 1];
-	while(ch >= str) {
-		if(*ch == '\n' || *ch == '\r' || *ch == ' ')
-			*ch = 0;
-		else
-			break;
-
-		ch--;
-	}
-
-	return 0;
 }
 
 

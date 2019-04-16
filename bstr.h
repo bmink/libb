@@ -32,7 +32,6 @@ char *bget(bstr_t *);
 
 int bstrlen(bstr_t *);
 int bstrempty(bstr_t *);
-int bstrtrim(bstr_t *);
 int bstrtolower(bstr_t *);
 int bstrendswith(bstr_t *, const char *);
 int bstrbeginswith(bstr_t *, const char *);
@@ -49,7 +48,6 @@ int xstrcasecmp(const char *, const char *);
 int xstrncasecmp(const char *, const char *, size_t);
 int xstrlen(char *);
 int xstrempty(const char *);
-int xstrtrim(char *);
 int xstrchop(char *, int);
 int xstrtolower(char *);
 int xstrendswith(const char *, const char *);
