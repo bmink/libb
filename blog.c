@@ -6,13 +6,16 @@
 #include "blog.h"
 #include "bstr.h"
 #include "bfs.h"
+#include "btime.h"
 
 #define BLOG_STATE_NOT_INITIALIZED	0
 #define BLOG_STATE_INITIALIZED		1
 
 int blog_state = BLOG_STATE_NOT_INITIALIZED;
+int blog_mode = BLOG_MODE_SINGLE;
 
 bstr_t	*blog_fnam = NULL;
+bstr_t	*blog_execn = NULL;
 FILE *blog_f = NULL;
 
 
@@ -31,6 +34,9 @@ blog_init(const char *execn, int mode)
 	date = NULL;
 
 	if(xstrempty(execn))
+		return EINVAL;
+
+	if(mode != BLOG_MODE_SINGLE && mode != BLOG_MODE_MULTI)
 		return EINVAL;
 
 	home = getenv("HOME");
@@ -80,13 +86,33 @@ blog_init(const char *execn, int mode)
 	}
 
 	if(mode == BLOG_MODE_SINGLE) {
-		bprintf(blog_fnam, "%s/log/%s/%s", home, execn, date);
-		printf("%s\n", bget(blog_fnam));
-		exit(0);
+		bprintf(blog_fnam, "%s/log/%s/%s", home, execn, bget(date));
+	} else {
+		bprintf(blog_fnam, "%s/log/%s/%s.%d", home, execn, bget(date),
+		    getpid());
 	}
 
-	blog_f = fopen();
+	printf("%s\n", bget(blog_fnam));
+	exit(0);
 
+	if(bstrempty(blog_fnam)) {
+		err = ENOEXEC;
+		goto end_label;
+	}
+
+	blog_f = fopen(bget(blog_fnam), "a");
+	if(blog_f == NULL) {
+		err = errno;
+		goto end_label;
+	}
+
+	blog_execn = binit();
+	if(blog_execn == NULL) {
+		err = ENOMEM;
+		goto end_label;
+	}
+
+	bstrcat(blog_execn, execn);
 
 	blog_state = BLOG_STATE_INITIALIZED;
 
@@ -97,6 +123,9 @@ end_label:
 	if(err != 0) {
 		if(blog_fnam != NULL) {
 			buninit(&blog_fnam);
+		}
+		if(blog_execn != NULL) {
+			buninit(&blog_execn);
 		}
 		if(blog_f != NULL) {
 			fclose(blog_f);
@@ -120,6 +149,7 @@ blog_uninit()
 	blog_f = NULL;
 
 	buninit(&blog_fnam);
+	buninit(&blog_execn);
 
 	blog_state = BLOG_STATE_NOT_INITIALIZED;
 
@@ -132,6 +162,12 @@ blog_logf(const char *func, const char *fmt, ...)
 {
 	va_list		arglist;
 	bstr_t		*nfmt;
+
+
+/* TODO
+   check if we need to open new file *
+   fflush if needed
+*/
 
 	if(blog_state != BLOG_STATE_INITIALIZED)
 		return;

@@ -1,5 +1,6 @@
 #include "btime.h"
 #include <errno.h>
+#include <string.h>
 
 #define ONE_MILLION	1000000
 #define ONE_BILLION	1000000000
@@ -139,7 +140,7 @@ bgetdate(bstr_t *bstr)
 	struct tm	tm;
 	int		ret;
 
-	if(bstrempty(bstr))
+	if(bstr == NULL)
 		return EINVAL;
 
 	(void) time(&now);

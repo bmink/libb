@@ -16,7 +16,14 @@
 #define BLOG_MODE_SINGLE	0
 #define BLOG_MODE_MULTI		1
 
-int blog_init(const char *, int);
+/* BLOG_FLUSH_DEFAULT: log lines are written to the logfile, but fflush() will
+ * not be called.
+ * BLOG_FLUSH_ALWAYS: fflush() will be called after every single log line.
+ */
+#define BLOG_FLUSH_DEFAULT	0
+#define BLOG_FLUSH_ALWAYS	1
+
+int blog_init(const char *, int, int);
 int blog_uninit();
 
 #define blogf(...) blog_logf(__func__, __VA_ARGS__)

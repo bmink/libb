@@ -24,9 +24,9 @@ bstr_t *binit();
 void buninit(bstr_t **);
 void bclear(bstr_t *);
 
-int bstrcat(bstr_t *, char *);
-int bmemcat(bstr_t *, char *, size_t);
-int bprintf(bstr_t *, char *, ...);
+int bstrcat(bstr_t *, const char *);
+int bmemcat(bstr_t *, const char *, size_t);
+int bprintf(bstr_t *, const char *, ...);
 
 char *bget(bstr_t *);
 
