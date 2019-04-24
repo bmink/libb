@@ -59,7 +59,7 @@ buninit(bstr_t **bstrptr)
 
 
 int
-bmemcat(bstr_t *bstr, char *mem, size_t len)
+bmemcat(bstr_t *bstr, const char *mem, size_t len)
 {
 	char	*newptr;
 	size_t	neededsiz;
@@ -94,7 +94,7 @@ bmemcat(bstr_t *bstr, char *mem, size_t len)
 
 
 int
-bstrcat(bstr_t *bstr, char *str)
+bstrcat(bstr_t *bstr, const char *str)
 {
 	if(str == NULL)	
 		return EINVAL;
@@ -104,9 +104,8 @@ bstrcat(bstr_t *bstr, char *str)
 
 
 int
-bprintf(bstr_t *bstr, char *format, ...)
+bvprintf(bstr_t *bstr, const char *format, va_list arglist)
 {
-	va_list		arglist;
 	int		ret;
 	char		*printed;
 
@@ -115,9 +114,7 @@ bprintf(bstr_t *bstr, char *format, ...)
 	
 	printed = NULL;
 
-	va_start(arglist, format);
 	ret = vasprintf(&printed, format, arglist);
-	va_end(arglist);
 
 	if(ret > 0 && printed) {
 		bmemcat(bstr, printed, strlen(printed));
@@ -125,6 +122,23 @@ bprintf(bstr_t *bstr, char *format, ...)
 		return 0;
 	} else
 		return ENOMEM;
+}
+
+
+int
+bprintf(bstr_t *bstr, const char *format, ...)
+{
+	va_list		arglist;
+	int		ret;
+
+	if(bstr == NULL || format == NULL)
+		return EINVAL;
+
+	va_start(arglist, format);
+	ret = bvprintf(bstr, format, arglist);
+	va_end(arglist);
+
+	return ret;
 }
 
 

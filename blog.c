@@ -8,134 +8,36 @@
 #include "bfs.h"
 #include "btime.h"
 
+#ifdef __APPLE__
+#include <os/log.h>
+#endif
+
 #define BLOG_STATE_NOT_INITIALIZED	0
 #define BLOG_STATE_INITIALIZED		1
 
 int blog_state = BLOG_STATE_NOT_INITIALIZED;
-int blog_mode = BLOG_MODE_SINGLE;
 
-bstr_t	*blog_fnam = NULL;
 bstr_t	*blog_execn = NULL;
-FILE *blog_f = NULL;
 
 
 int
-blog_init(const char *execn, int mode)
+blog_init(const char *execn)
 {
-	bstr_t	*dir;
-	char	*home;
-	int	err;
-	int	ret;
-	bstr_t	*date;
-
-	err = 0;
-	dir = NULL;
-	home = NULL;
-	date = NULL;
+	if(blog_state != BLOG_STATE_NOT_INITIALIZED)
+		return ENOEXEC;
 
 	if(xstrempty(execn))
 		return EINVAL;
 
-	if(mode != BLOG_MODE_SINGLE && mode != BLOG_MODE_MULTI)
-		return EINVAL;
-
-	home = getenv("HOME");
-	if(xstrempty(home))
-		return ENOEXEC;
-
-	if(!bfs_isdir(home))
-		return ENOENT;
-
-	dir = binit();
-	if(dir == NULL)
-		return ENOMEM;
-
-	bprintf(dir, "%s/log", home);
-
-	ret = bfs_mkdir(bget(dir));
-	if(ret != 0 && ret != EEXIST) {
-		err = errno;
-		goto end_label;
-	}
-
-	bclear(dir);
-	bprintf(dir, "%s/log/%s", home, execn);
-
-	ret = bfs_mkdir(bget(dir));
-	if(ret != 0 && ret != EEXIST) {
-		err = errno;
-		goto end_label;
-	}
-
-	blog_fnam = binit();
-	if(blog_fnam == NULL) {
-		err = ENOMEM;
-		goto end_label;
-	}
-
-	date = binit();
-	if(date == NULL) {
-		err = ENOMEM;
-		goto end_label;
-	}
-
-	ret = bgetdate(date);
-	if(ret != 0) {
-		err = ret;
-		goto end_label;
-	}
-
-	if(mode == BLOG_MODE_SINGLE) {
-		bprintf(blog_fnam, "%s/log/%s/%s", home, execn, bget(date));
-	} else {
-		bprintf(blog_fnam, "%s/log/%s/%s.%d", home, execn, bget(date),
-		    getpid());
-	}
-
-	printf("%s\n", bget(blog_fnam));
-	exit(0);
-
-	if(bstrempty(blog_fnam)) {
-		err = ENOEXEC;
-		goto end_label;
-	}
-
-	blog_f = fopen(bget(blog_fnam), "a");
-	if(blog_f == NULL) {
-		err = errno;
-		goto end_label;
-	}
-
 	blog_execn = binit();
-	if(blog_execn == NULL) {
-		err = ENOMEM;
-		goto end_label;
-	}
+	if(blog_execn == NULL)
+		return ENOMEM;
 
 	bstrcat(blog_execn, execn);
 
 	blog_state = BLOG_STATE_INITIALIZED;
 
-end_label:
-
-	if(dir)
-		buninit(&dir);
-	if(err != 0) {
-		if(blog_fnam != NULL) {
-			buninit(&blog_fnam);
-		}
-		if(blog_execn != NULL) {
-			buninit(&blog_execn);
-		}
-		if(blog_f != NULL) {
-			fclose(blog_f);
-			blog_f = NULL;
-		}
-	}
-	if(date)
-		buninit(&date);
-	
-	return err;
+	return 0;
 }
 
 
@@ -145,10 +47,6 @@ blog_uninit()
 	if(blog_state != BLOG_STATE_INITIALIZED)
 		return ENOEXEC;
 
-	fclose(blog_f);
-	blog_f = NULL;
-
-	buninit(&blog_fnam);
 	buninit(&blog_execn);
 
 	blog_state = BLOG_STATE_NOT_INITIALIZED;
@@ -162,18 +60,15 @@ blog_logf(const char *func, const char *fmt, ...)
 {
 	va_list		arglist;
 	bstr_t		*nfmt;
-
-
-/* TODO
-   check if we need to open new file *
-   fflush if needed
-*/
+	bstr_t		*logmsg;
 
 	if(blog_state != BLOG_STATE_INITIALIZED)
 		return;
 
 	if(xstrempty(func) || xstrempty(fmt))
 		return;
+
+	logmsg = NULL;
 
 	nfmt = binit();
 	if(nfmt == NULL) {
@@ -184,10 +79,22 @@ blog_logf(const char *func, const char *fmt, ...)
 	bprintf(nfmt, "<%s> %s", func, fmt);
 
 	va_start(arglist, fmt);
-	//vsyslog(LOG_NOTICE, bget(nfmt), arglist);
+#ifdef __APPLE__
+	/* There's no vararg version of os_log. Have to print the log message
+	 * into a string ourselves. */
+	logmsg = binit();
+	if(logmsg != NULL) {
+		bvprintf(logmsg, bget(nfmt), arglist);
+		if(!bstrempty(logmsg))
+			os_log(OS_LOG_DEFAULT, "%s", bget(logmsg));
+	}
+	if(logmsg != NULL) {
+		buninit(&logmsg);
+	}
+#else
+	vsyslog(LOG_NOTICE, bget(nfmt), arglist);
+#endif
         va_end(arglist);
-
-	printf("%s\n", bget(nfmt));	
 
 	buninit(&nfmt);
 }

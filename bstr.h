@@ -11,6 +11,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdarg.h>
 
 
 typedef struct bstr {
@@ -27,6 +28,7 @@ void bclear(bstr_t *);
 int bstrcat(bstr_t *, const char *);
 int bmemcat(bstr_t *, const char *, size_t);
 int bprintf(bstr_t *, const char *, ...);
+int bvprintf(bstr_t *, const char *, va_list);
 
 char *bget(bstr_t *);
 
