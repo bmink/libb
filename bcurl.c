@@ -140,7 +140,7 @@ end_label:
 	if(err != 0 && buf != NULL)
 		buninit(&buf);
 
-	return 0;
+	return err;
 }
 
 
