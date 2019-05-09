@@ -51,6 +51,7 @@ int xstrncasecmp(const char *, const char *, size_t);
 int xstrlen(char *);
 int xstrempty(const char *);
 int xstrchop(char *, int);
+int xstrchopnewline(char *);
 int xstrtolower(char *);
 int xstrendswith(const char *, const char *);
 int xstrbeginswith(const char *, const char *);

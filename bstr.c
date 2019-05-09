@@ -487,3 +487,16 @@ xatoi(const char *str)
 	return atoi(str);
 }
 
+
+int
+xstrchopnewline(char *str)
+{
+	if(xstrempty(str))
+		return EINVAL;
+
+	while(xstrendswith(str, "\n") || xstrendswith(str, "\r"))
+		xstrchop(str, 1);
+
+	return 0;
+}
+
