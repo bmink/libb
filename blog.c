@@ -42,7 +42,7 @@ blog_init(const char *execn)
 
 
 int
-blog_uninit()
+blog_uninit(void)
 {
 	if(blog_state != BLOG_STATE_INITIALIZED)
 		return ENOEXEC;

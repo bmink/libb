@@ -10,7 +10,7 @@
 
 
 bstr_t *
-binit()
+binit(void)
 {
 	bstr_t	*bstr;
 

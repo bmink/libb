@@ -8,7 +8,7 @@
 
 
 int blog_init(const char *);
-int blog_uninit();
+int blog_uninit(void);
 
 #define blogf(...) blog_logf(__func__, __VA_ARGS__)
 void blog_logf(const char *, const char *, ...);

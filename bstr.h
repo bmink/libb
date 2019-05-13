@@ -21,7 +21,7 @@ typedef struct bstr {
 } bstr_t;
 
 
-bstr_t *binit();
+bstr_t *binit(void);
 void buninit(bstr_t **);
 void bclear(bstr_t *);
 
