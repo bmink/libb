@@ -44,7 +44,7 @@ bclear(bstr_t *bstr)
 
 
 void
-buninit_p(bstr_t *bstr)
+buninit_(bstr_t *bstr)
 {
 	/* Same as buninit(), but does not alter the pointer itself. In most
 	 * cases, you want to use buninit(), and NOT this function. Only
@@ -521,10 +521,10 @@ xstrchopnewline(char *str)
 int
 xstrstr(const char *haystack, const char *needle)
 {
-	/* Libc strstr returns a char * containing either a pointer to the
+	/* libc's strstr returns a char * containing either a pointer to the
 	 * first occurrence of needle, or NULL if needle wasn't found.
 	 *
-	 * IMO it's safer to return an index into haystack, or -1 if not found.
+	 * IMO it's safer to return an offset into haystack, or -1 if not found.
 	 */
 
 	char	*res;
@@ -544,17 +544,18 @@ xstrstr(const char *haystack, const char *needle)
 int
 xstrsplit(const char *str, const char *sep, int ignoreempty, barr_t **res)
 {
-	/* Unlike in strtok, sep here is taken as a delimiter string, not as
-	 * an array of delimiter characters. So the delimiter can be more than
-	 * one character long.
+	/* Unlike with libc's strtok, sep here is taken as a delimiter string,
+	 * not as an array of possible delimiter characters. So the delimiter
+	 * can be a string more than one character long.
 	 *
 	 * If ignoreempty is nonzero, then empty substrings are ignored,
 	 * and repeated occurrences of the separator are ignored. This is
 	 * strtok behavior. 
 	 *
-	 * If ignoreempty is zero, then empty elements are expressed as
+	 * If ignoreempty is zero, then empty elements are returned as
 	 * empty bstr-s in the result array.
 	 */
+
 	barr_t	*arr;
 	int	cur;
 	bstr_t	*elem;
@@ -573,10 +574,9 @@ xstrsplit(const char *str, const char *sep, int ignoreempty, barr_t **res)
 	arr = barr_init(sizeof(barr_t *));
 
 	len = xstrlen(str);
-	
 
 	cur = 0;
-	while(cur < len) {
+	while(1) {
 		idx = xstrstr(str + cur, sep);
 		if(idx < 0) {
 			/* No more occurrences of sep, add rest of string
@@ -587,13 +587,15 @@ xstrsplit(const char *str, const char *sep, int ignoreempty, barr_t **res)
 				goto end_label;
 			}
 
-			bstrcat(elem, str + cur);
+			if(cur < len) {
+				bstrcat(elem, str + cur);
+			}
 			barr_add(arr, &elem);
 			break;
 		} else if(idx == 0) {
 			/* This means that the separator is repeated, ie.
 			 * we're dealing with an empty token. Either skip
-			 * or add empty element to result. */
+			 * or add an empty element to result. */
 
 			if(ignoreempty == 0) {
 				elem = binit();
@@ -613,7 +615,7 @@ xstrsplit(const char *str, const char *sep, int ignoreempty, barr_t **res)
 			}
 			bmemcat(elem, str + cur, idx);
 			barr_add(arr, &elem);
-			cur += xstrlen(sep);
+			cur += idx + xstrlen(sep);
 			continue;
 		}
 	}
@@ -625,7 +627,7 @@ end_label:
 			for(elem = (bstr_t *) barr_begin(arr);
 			    elem < (bstr_t *) barr_end(arr);
 			    ++elem) {
-				buninit_p(elem);
+				buninit_(elem);
 			}
 		}
 		barr_uninit(&arr);
