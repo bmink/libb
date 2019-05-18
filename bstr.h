@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include "barr.h"
 
 
 typedef struct bstr {
@@ -23,6 +24,7 @@ typedef struct bstr {
 
 bstr_t *binit(void);
 void buninit(bstr_t **);
+void buninit_p(bstr_t *);
 void bclear(bstr_t *);
 
 int bstrcat(bstr_t *, const char *);
@@ -37,6 +39,7 @@ int bstrempty(bstr_t *);
 int bstrtolower(bstr_t *);
 int bstrendswith(bstr_t *, const char *);
 int bstrbeginswith(bstr_t *, const char *);
+int bstrsplit(bstr_t *, const char *, int, barr_t **);
 
 int btofile(const char *, bstr_t *);
 int btofilep(FILE *, bstr_t *);
@@ -48,7 +51,7 @@ int xfree(char **);
 int xstrcmp(const char *, const char *);
 int xstrcasecmp(const char *, const char *);
 int xstrncasecmp(const char *, const char *, size_t);
-int xstrlen(char *);
+int xstrlen(const char *);
 int xstrempty(const char *);
 int xstrchop(char *, int);
 int xstrchopnewline(char *);
@@ -57,8 +60,10 @@ int xstrendswith(const char *, const char *);
 int xstrbeginswith(const char *, const char *);
 int xstrbeginswithn(const char *, const char *);
 int xstrmakefixedwidth(const char *, char *, int);
+int xstrstr(const char *, const char *);
 char *xstrdup(const char *);
 int xatoi(const char *);
 void *memdup(const void *, size_t);
+int xstrsplit(const char *, const char *, int, barr_t **);
  
 #endif
