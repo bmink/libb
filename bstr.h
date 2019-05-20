@@ -40,6 +40,7 @@ int bstrtolower(bstr_t *);
 int bstrendswith(bstr_t *, const char *);
 int bstrbeginswith(bstr_t *, const char *);
 int bstrsplit(bstr_t *, const char *, int, barr_t **);
+int bstrpad(bstr_t *, size_t, char);
 
 int btofile(const char *, bstr_t *);
 int btofilep(FILE *, bstr_t *);

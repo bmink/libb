@@ -650,3 +650,16 @@ bstrsplit(bstr_t *bstr, const char *sep, int ignoreempty, barr_t **res)
 }
 
 
+int
+bstrpad(bstr_t *bstr, size_t nlen, char padc)
+{
+	if(bstr == NULL)
+		return EINVAL;
+
+	while(bstrlen(bstr) < nlen)
+		bprintf(bstr, "%c", padc);
+
+	return 0;
+}
+
+
