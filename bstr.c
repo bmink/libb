@@ -571,7 +571,11 @@ xstrsplit(const char *str, const char *sep, int ignoreempty, barr_t **res)
 	err = 0;
 	len = 0;
 
-	arr = barr_init(sizeof(barr_t *));
+	arr = barr_init(sizeof(bstr_t));
+	if(arr == NULL) {
+		err = ENOENT;
+		goto end_label;
+	}
 
 	len = xstrlen(str);
 
@@ -638,18 +642,6 @@ end_label:
 		}
 		barr_uninit(&arr);
 	} else {
-
-printf("herehere\n");
-
-for(elem = (bstr_t *) barr_begin(arr);
-    elem < (bstr_t *) barr_end(arr);
-    ++elem){
-	printf("-%s", bget(elem));
-}
-		    
-
-
-
 		*res = arr;
 	}
 
