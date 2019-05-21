@@ -577,6 +577,9 @@ xstrsplit(const char *str, const char *sep, int ignoreempty, barr_t **res)
 
 	cur = 0;
 	while(1) {
+
+printf("Looking in %s\n", str+cur);
+
 		idx = xstrstr(str + cur, sep);
 		if(idx < 0) {
 			/* No more occurrences of sep, add rest of string
@@ -590,7 +593,8 @@ xstrsplit(const char *str, const char *sep, int ignoreempty, barr_t **res)
 			if(cur < len) {
 				bstrcat(elem, str + cur);
 			}
-			barr_add(arr, &elem);
+printf("Adding0 %s\n", bget(elem));
+			barr_add(arr, elem);
 			break;
 		} else if(idx == 0) {
 			/* This means that the separator is repeated, ie.
@@ -603,7 +607,8 @@ xstrsplit(const char *str, const char *sep, int ignoreempty, barr_t **res)
 					err = EINVAL;
 					goto end_label;
 				}
-				barr_add(arr, &elem);
+printf("Adding1 %s\n", bget(elem));
+				barr_add(arr, elem);
 			}
 			cur += xstrlen(sep);
 			continue;
@@ -614,7 +619,8 @@ xstrsplit(const char *str, const char *sep, int ignoreempty, barr_t **res)
 				goto end_label;
 			}
 			bmemcat(elem, str + cur, idx);
-			barr_add(arr, &elem);
+printf("Adding2 %s\n", bget(elem));
+			barr_add(arr, elem);
 			cur += idx + xstrlen(sep);
 			continue;
 		}
@@ -623,7 +629,7 @@ xstrsplit(const char *str, const char *sep, int ignoreempty, barr_t **res)
 end_label:
 
 	if(err != 0) {
-		if(arr) {
+		if(arr != NULL) {
 			for(elem = (bstr_t *) barr_begin(arr);
 			    elem < (bstr_t *) barr_end(arr);
 			    ++elem) {
@@ -632,6 +638,18 @@ end_label:
 		}
 		barr_uninit(&arr);
 	} else {
+
+printf("herehere\n");
+
+for(elem = (bstr_t *) barr_begin(arr);
+    elem < (bstr_t *) barr_end(arr);
+    ++elem){
+	printf("-%s", bget(elem));
+}
+		    
+
+
+
 		*res = arr;
 	}
 
