@@ -28,7 +28,7 @@ over the years and use in most of my projects.
 
 ## barr/bstr example
 
-It can get confusing to use a barr of bstr's, so here's an example:
+It can get confusing to use a barr of bstr's (or any other struct-type that's allocated on the heap), so here's an example:
 
 ```
 barr_t  *arr;
