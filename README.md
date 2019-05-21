@@ -34,7 +34,7 @@ It can get confusing to use a barr of bstr's, so here's an example:
 barr_t  *arr;
 bstr_t  *elem;
 
-arr = barr_init(bstr_t);
+arr = barr_init(sizeof(bstr_t));
 
 /* Adding: */
 elem = binit();
