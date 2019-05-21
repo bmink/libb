@@ -1,5 +1,3 @@
-# libb
-# https://github.com/bmink/libb
 
 A collection of helpful things for the C programming language that I wrote
 over the years and use in most of my projects.
@@ -26,3 +24,42 @@ over the years and use in most of my projects.
 * bfs.\[ch\] contains file system related utilities.
 
 * bint.\[ch\] provides integer utilities.
+
+
+## barr/bstr example
+
+It can get confusing to use a barr of bstr's, so here's an example:
+
+```
+barr_t  *arr;
+bstr_t  *elem;
+
+arr = barr_init(bstr_t);
+
+/* Adding: */
+elem = binit();
+barr_add(arr, elem);
+elem = binit();
+barr_add(arr, elem);
+elem = binit();
+barr_add(arr, elem);
+elem = binit();
+barr_add(arr, elem);
+
+/* Reading */
+for(elem = (bstr_t *) barr_begin(arr);
+    elem < (bstr_t *) barr_end(arr);
+    ++elem) {
+        printf("(%d) %s\n", idx, bstrlen(elem), bget(elem));
+    }
+}
+
+/* Cleanup */
+for(elem = (bstr_t *) barr_begin(arr);
+    elem < (bstr_t *) barr_end(arr);
+    ++elem) {
+        buninit_(elem); /* Use the "_" form of buninit that doesn't reset the pointer */
+}
+
+barr_uninit(&arr);
+```
