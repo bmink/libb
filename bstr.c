@@ -44,23 +44,6 @@ bclear(bstr_t *bstr)
 
 
 void
-buninit_(bstr_t *bstr)
-{
-	/* Same as buninit(), but does not alter the pointer itself. In most
-	 * cases, you want to use buninit(), and NOT this function. Only
-	 * use if you know what you're doing! */
-
-	bstr_t *foo;
-
-	if(!bstr)
-		return;
-
-	foo = bstr;
-	buninit(&foo);
-}
-
-
-void
 buninit(bstr_t **bstrptr)
 {
 	if(!bstrptr || !*bstrptr)
@@ -72,6 +55,23 @@ buninit(bstr_t **bstrptr)
 	free(*bstrptr);
 	*bstrptr = NULL;
 
+}
+
+
+void
+buninit_(bstr_t *bstr)
+{
+	/* Same as buninit(), but does not free (or alter) the pointer itself.
+	 * In most cases, your bstr will be allocated on the heap, and you will
+	 * want to use buninit(), and NOT this function. Only use if you know
+	 * what you're doing! (One example when you'd use buninit_() would be
+	 * when cleaning up a barr of bstr's. */
+
+	if(!bstr)
+		return;
+
+	if(bstr->bs_str)
+		free(bstr->bs_str);
 }
 
 
