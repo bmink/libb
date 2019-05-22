@@ -58,7 +58,7 @@ for(elem = (bstr_t *) barr_begin(arr);
 for(elem = (bstr_t *) barr_begin(arr);
     elem < (bstr_t *) barr_end(arr);
     ++elem) {
-        buninit_(elem); /* Use the "_" form of buninit that doesn't reset the pointer */
+        buninit_(elem); /* Use the "_" form of buninit that doesn't free/reset the pointer */
 }
 
 barr_uninit(&arr);
