@@ -582,8 +582,6 @@ xstrsplit(const char *str, const char *sep, int ignoreempty, barr_t **res)
 	cur = 0;
 	while(1) {
 
-printf("Looking in %s\n", str+cur);
-
 		idx = xstrstr(str + cur, sep);
 		if(idx < 0) {
 			/* No more occurrences of sep, add rest of string
@@ -597,7 +595,6 @@ printf("Looking in %s\n", str+cur);
 			if(cur < len) {
 				bstrcat(elem, str + cur);
 			}
-printf("Adding0 %s\n", bget(elem));
 			barr_add(arr, elem);
 			break;
 		} else if(idx == 0) {
@@ -611,7 +608,6 @@ printf("Adding0 %s\n", bget(elem));
 					err = EINVAL;
 					goto end_label;
 				}
-printf("Adding1 %s\n", bget(elem));
 				barr_add(arr, elem);
 			}
 			cur += xstrlen(sep);
@@ -623,7 +619,6 @@ printf("Adding1 %s\n", bget(elem));
 				goto end_label;
 			}
 			bmemcat(elem, str + cur, idx);
-printf("Adding2 %s\n", bget(elem));
 			barr_add(arr, elem);
 			cur += idx + xstrlen(sep);
 			continue;
