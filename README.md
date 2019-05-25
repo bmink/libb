@@ -39,7 +39,7 @@ bstr_t  *elem;
 
 arr = barr_init(sizeof(bstr_t));
 
-/* Adding: */
+/* Adding */
 elem = binit();
 barr_add(arr, elem);
 elem = binit();
@@ -63,6 +63,5 @@ for(elem = (bstr_t *) barr_begin(arr);
     ++elem) {
         buninit_(elem); /* Use the "_" form of buninit that doesn't free/reset the pointer */
 }
-
 barr_uninit(&arr);
 ```
