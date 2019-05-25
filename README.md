@@ -12,6 +12,8 @@ over the years and use in most of my projects.
 * barr.\[ch\] is an array library. It manages its own memory and growth. In addition
   to adding and accessing elements, it can be sorted and searched easily.
 
+* blist.\[ch\] provides a linked list / queue.
+
 * btime.[ch] contains utilities for time stucture (time_t, struct timeval,
   struct timespec) manipulation, comparison, addition/substraction etc.
 
@@ -24,6 +26,7 @@ over the years and use in most of my projects.
 * bfs.\[ch\] contains file system related utilities.
 
 * bint.\[ch\] provides integer utilities.
+
 
 
 ## barr/bstr example
