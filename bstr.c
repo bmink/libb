@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <ctype.h>
+#include <openssl/md5.h>
 
 #define BSTR_INITSIZE	4096
 #define BSTR_GROWFACT	2
@@ -668,3 +669,32 @@ bstrpad(bstr_t *bstr, size_t nlen, char padc)
 }
 
 
+#define BSTR_MD5_SIZE	20
+
+int
+bstr_md5_readable(bstr_t *buf, bstr_t *rethash)
+{
+	/* Returns the MD5 hash of buf, in human-readable form. Result will
+	 * be appended to rethash. */
+
+	char	hash[BSTR_MD5_SIZE];
+	int	i;
+
+	if(bstrempty(buf) || rethash == NULL)
+		return 0;
+
+	memset(hash, 0, BSTR_MD5_SIZE);
+
+	(void) MD5((unsigned char *) bget(buf), bstrlen(buf),
+	    (unsigned char *) hash);
+
+	if(xstrempty(hash))
+		return ENOEXEC;
+
+	/* Convert to human-readable. */
+	for(i = 0; i < 16; ++i) {
+		bprintf(rethash, "%0x", (unsigned char)hash[i]);
+	}
+
+	return 0;
+}
