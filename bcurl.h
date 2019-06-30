@@ -4,6 +4,7 @@
 #ifndef BCURL_H
 #define BCURL_H
 
+#include "bstr.h"
 
 int bcurl_init();
 int bcurl_uninit();
