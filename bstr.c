@@ -773,6 +773,10 @@ bstr_remhtml(bstr_t *text, bstr_t *res)
 				bstrcat(res, "\n\n");
 				cur += 3;
 			} else
+			if(xstrcasebeginswith(cur, "&#x27;")) {
+				bstrcat(res, "'");
+				cur += 6;
+			} else
 			if(xstrcasebeginswith(cur, "<a ")) {
 				bstrcat(res, "[");
 				cur += 3;
