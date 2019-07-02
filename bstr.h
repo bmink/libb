@@ -39,6 +39,7 @@ int bstrempty(bstr_t *);
 int bstrtolower(bstr_t *);
 int bstrendswith(bstr_t *, const char *);
 int bstrbeginswith(bstr_t *, const char *);
+int bstrcasebeginswith(bstr_t *, const char *);
 int bstrsplit(bstr_t *, const char *, int, barr_t **);
 int bstrpad(bstr_t *, size_t, char);
 
@@ -49,6 +50,7 @@ int bfromfilep(bstr_t *, FILE *);
 int bfromfiled(bstr_t *, int);
 
 int bstr_md5_readable(bstr_t *, bstr_t *);
+int bstr_remhtml(bstr_t *, bstr_t *);
 
 int xfree(char **);
 int xstrcmp(const char *, const char *);
@@ -61,9 +63,11 @@ int xstrchopnewline(char *);
 int xstrtolower(char *);
 int xstrendswith(const char *, const char *);
 int xstrbeginswith(const char *, const char *);
+int xstrcasebeginswith(const char *, const char *);
 int xstrbeginswithn(const char *, const char *);
 int xstrmakefixedwidth(const char *, char *, int);
 int xstrstr(const char *, const char *);
+int xstrcasestr(const char *, const char *);
 char *xstrdup(const char *);
 int xatoi(const char *);
 void *memdup(const void *, size_t);

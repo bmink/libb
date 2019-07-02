@@ -215,6 +215,15 @@ bstrbeginswith(bstr_t *bstr, const char *substr)
 
 
 int
+bstrcasebeginswith(bstr_t *bstr, const char *substr)
+{
+	if(bstr == NULL)
+		return 0;
+	return xstrcasebeginswith(bget(bstr), substr);
+}
+
+
+int
 xstrcmp(const char *str1, const char *str2)
 {
 	if(str1 == NULL || str2 == NULL)
@@ -308,6 +317,19 @@ xstrbeginswith(const char *str, const char *substr)
 		return 0;
 
 	if(strstr(str, substr) == str)
+		return 1;
+	else
+		return 0;
+}
+
+
+int
+xstrcasebeginswith(const char *str, const char *substr)
+{
+	if(xstrempty(str) || xstrempty(substr))
+		return 0;
+
+	if(strcasestr(str, substr) == str)
 		return 1;
 	else
 		return 0;
@@ -543,6 +565,30 @@ xstrstr(const char *haystack, const char *needle)
 
 
 int
+xstcaserstr(const char *haystack, const char *needle)
+{
+	/* libc's strcasestr returns a char * containing either a pointer to the
+	 * first occurrence of needle, or NULL if needle wasn't found.
+	 *
+	 * IMO it's safer to return an offset into haystack, or -1 if not found.
+	 */
+
+	char	*res;
+
+	if(xstrempty(haystack) || xstrempty(needle))
+		return -1;
+
+	res = strcasestr(haystack, needle);
+
+	if(res == NULL)
+		return -1;
+	else
+		return res - haystack;
+}
+
+
+
+int
 xstrsplit(const char *str, const char *sep, int ignoreempty, barr_t **res)
 {
 	/* Unlike with libc's strtok, sep here is taken as a delimiter string,
@@ -681,7 +727,7 @@ bstr_md5_readable(bstr_t *buf, bstr_t *rethash)
 	int	i;
 
 	if(bstrempty(buf) || rethash == NULL)
-		return 0;
+		return EINVAL;
 
 	memset(hash, 0, BSTR_MD5_SIZE);
 
@@ -694,6 +740,65 @@ bstr_md5_readable(bstr_t *buf, bstr_t *rethash)
 	/* Convert to human-readable. */
 	for(i = 0; i < 16; ++i) {
 		bprintf(rethash, "%0x", (unsigned char)hash[i]);
+	}
+
+	return 0;
+}
+
+
+int
+bstr_remhtml(bstr_t *text, bstr_t *res)
+{
+	/* Removes HTML tags from the string. Converts a few tags like
+	 * <br> etc, but mostly just removes tags. */
+	
+	char	*cur;
+	int	intag;
+
+	if(bstrempty(text) || res == NULL)
+		return EINVAL;
+
+	cur = bget(text);
+
+	intag = 0;
+
+	while(*cur) {
+
+		if(!intag) {
+			if(xstrcasebeginswith(cur, "<br>")) {
+				bstrcat(res, "\n");
+				cur += 4;
+			} else
+			if(xstrcasebeginswith(cur, "<p>")) {
+				bstrcat(res, "\n\n");
+				cur += 3;
+			} else
+			if(xstrcasebeginswith(cur, "<a ")) {
+				bstrcat(res, "[");
+				cur += 3;
+				++intag;
+			} else
+			if(xstrcasebeginswith(cur, "</a>")) {
+				bstrcat(res, "]");
+				cur += 4;
+			} else
+			if(xstrcasebeginswith(cur, "<img ")) {
+				bstrcat(res, "<IMAGE>");
+				cur += 5;
+				++intag;
+			} else
+			if(xstrcasebeginswith(cur, "<")) {
+				cur += 1;
+				++intag;
+			} else {
+				bprintf(res, "%c", *cur);
+				++cur;
+			}
+		} else {
+			if(xstrcasebeginswith(cur, ">"))
+				intag = 0;
+			++cur;
+		}
 	}
 
 	return 0;
