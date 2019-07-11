@@ -49,7 +49,6 @@ int bfromfile(bstr_t *, const char *);
 int bfromfilep(bstr_t *, FILE *);
 int bfromfiled(bstr_t *, int);
 
-int bstr_md5_readable(bstr_t *, bstr_t *);
 int bstr_remhtml(bstr_t *, bstr_t *);
 
 int xfree(char **);
