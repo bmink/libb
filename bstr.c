@@ -502,7 +502,7 @@ bfromfile(bstr_t *bstr, const char *filen)
 	FILE	*f;
 	int	ret;
 
-	if(xstrempty(filen) || bstrempty(bstr))
+	if(xstrempty(filen) || bstr == NULL)
 		return EINVAL;
 
 	f = fopen(filen, "r");
@@ -584,7 +584,6 @@ xstcaserstr(const char *haystack, const char *needle)
 	else
 		return res - haystack;
 }
-
 
 
 int
