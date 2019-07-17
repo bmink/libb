@@ -53,7 +53,7 @@ barr_add(arr, elem);
 for(elem = (bstr_t *) barr_begin(arr);
     elem < (bstr_t *) barr_end(arr);
     ++elem) {
-        printf("(%d) %s\n", idx, bstrlen(elem), bget(elem));
+        printf("(%d) %s\n", bstrlen(elem), bget(elem));
     }
 }
 
