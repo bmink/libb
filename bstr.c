@@ -341,11 +341,11 @@ xstrmakefixedwidth(const char *str, char *buf, int size)
 	int	tocopy;
 	int	cut;
 
-	if(xstrempty(str) || buf == NULL || size < 5)
+	if(xstrempty(str) || buf == NULL || size < 7)
 		return EINVAL;
 
 	cut = 0;
-	tocopy = size - 4;
+	tocopy = size - 6;
 	if(strlen(str) < tocopy)
 		tocopy = strlen(str);
 	else
@@ -354,7 +354,7 @@ xstrmakefixedwidth(const char *str, char *buf, int size)
 	memset(buf, ' ', size);
 	strncpy(buf, str, tocopy);
 	if(cut)
-		sprintf(buf + tocopy, "...");
+		sprintf(buf + tocopy, "[...]");
 
 	buf[size - 1] = 0;
 
@@ -714,7 +714,7 @@ bstrpad(bstr_t *bstr, size_t nlen, char padc)
 
 
 int
-bstr_remhtml(bstr_t *text, bstr_t *res)
+bstrremhtml(bstr_t *text, bstr_t *res)
 {
 	/* Removes HTML tags from the string. Converts a few tags like
 	 * <br> etc, but mostly just removes tags. */
@@ -770,6 +770,59 @@ bstr_remhtml(bstr_t *text, bstr_t *res)
 				intag = 0;
 			++cur;
 		}
+	}
+
+	return 0;
+}
+
+
+int
+bstrmakefixedwidth(bstr_t *old, bstr_t *new, int size)
+{
+	int	tocopy;
+	int	cut;
+
+	if(old == NULL || new == NULL || size < 6)
+		return EINVAL;
+
+	cut = 0;
+	tocopy = size - 6;
+	if(bstrlen(old) < tocopy)
+		tocopy = bstrlen(old);
+	else
+		cut++;
+
+	bclear(new);
+	bmemcat(new, bget(old), tocopy);
+
+	if(cut)
+		bstrcat(new, "[...]");
+
+	return 0;
+}
+
+
+int
+bstrlimitlines(bstr_t *old, bstr_t *new, int maxlines)
+{
+	int	lcnt;
+	char	*ch;
+
+	if(old == NULL || new == NULL || maxlines <= 1)
+		return EINVAL;
+
+	bclear(new);
+
+	lcnt = 0;
+	for(ch = bget(old); *ch; ch++) {
+		if(*ch == '\n') {
+			lcnt++;
+			if(lcnt >= maxlines) {
+				bprintf(new, "\n[...]\n");
+				return 0;
+			}
+		}
+		bprintf(new, "%c", *ch);
 	}
 
 	return 0;

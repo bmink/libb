@@ -49,7 +49,9 @@ int bfromfile(bstr_t *, const char *);
 int bfromfilep(bstr_t *, FILE *);
 int bfromfiled(bstr_t *, int);
 
-int bstr_remhtml(bstr_t *, bstr_t *);
+int bstrmakefixedwidth(bstr_t *, bstr_t *, int);
+int bstrlimitlines(bstr_t *, bstr_t *, int);
+int bstrremhtml(bstr_t *, bstr_t *);
 
 int xfree(char **);
 int xstrcmp(const char *, const char *);
