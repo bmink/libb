@@ -6,6 +6,7 @@
 
 #include "bstr.h"
 #include <sys/time.h>
+#include <time.h>
 
 int btimeval_tonow(struct timeval *);
 int btimeval_adds(struct timeval *, time_t);

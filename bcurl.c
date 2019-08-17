@@ -7,7 +7,7 @@
 
 
 int
-bcurl_init()
+bcurl_init(void)
 {
 	int	ret;
 
@@ -22,7 +22,7 @@ bcurl_init()
 
 
 int
-bcurl_uninit()
+bcurl_uninit(void)
 {
 	curl_global_cleanup();
 	return 0;

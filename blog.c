@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <syslog.h>
 #include "blog.h"
 #include "bstr.h"
 #include "bfs.h"
@@ -88,13 +89,11 @@ blog_logf(const char *func, const char *fmt, ...)
 		if(!bstrempty(logmsg))
 			os_log(OS_LOG_DEFAULT, "%s", bget(logmsg));
 	}
-	if(logmsg != NULL) {
-		buninit(&logmsg);
-	}
 #else
 	vsyslog(LOG_NOTICE, bget(nfmt), arglist);
 #endif
         va_end(arglist);
 
+	buninit(&logmsg);
 	buninit(&nfmt);
 }
