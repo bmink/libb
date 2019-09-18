@@ -151,3 +151,22 @@ blist_rpop(blist_t *blist)
 	return elem;
 }
 
+
+blelem_t *
+blist_getidx(blist_t *bl, int idx)
+{
+	int		i;
+	blelem_t	*elem;
+
+	if(bl == NULL)
+		return NULL;
+
+	i = 0;
+	for(elem = bl->bl_first; elem != NULL; elem = elem->be_next) {
+		if(i == idx)
+			return elem;
+		++i;
+	}
+
+	return NULL;
+}

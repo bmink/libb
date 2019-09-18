@@ -27,5 +27,6 @@ blelem_t *blist_rpop(blist_t *);
 
 int blist_insertafter(blist_t *, blelem_t *, void *);
 int blist_delelem(blist_t *, blelem_t *);
+blelem_t *blist_getidx(blist_t *, int);
 
 #endif
