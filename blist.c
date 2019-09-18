@@ -67,10 +67,17 @@ blist_lpush(blist_t *blist, void *data)
 
 	elem->be_data = data;
 
+	/* This will be the new first element. */
 	if(blist->bl_first)
 		blist->bl_first->be_prev = elem;
 	elem->be_next = blist->bl_first;
 	blist->bl_first = elem;
+
+	
+	/* If the list was empty, then this will also be the new last
+	 * element. */
+	if(blist->bl_last == NULL)
+		blist->bl_last = elem;
 
 	++blist->bl_cnt;
 
@@ -91,10 +98,18 @@ blist_rpush(blist_t *blist, void *data)
 
 	elem->be_data = data;
 
+	/* This will be the new last element. */
 	if(blist->bl_last)
 		blist->bl_last->be_next = elem;
 	elem->be_prev = blist->bl_last;
 	blist->bl_last = elem;
+
+
+	/* If the list was empty, then this will also be the new first
+	 * element. */
+	if(blist->bl_first == NULL)
+		blist->bl_first = elem;
+		
 
 	++blist->bl_cnt;
 
@@ -117,6 +132,9 @@ blist_lpop(blist_t *blist)
 	blist->bl_first = elem->be_next;
 	if(blist->bl_first)
 		blist->bl_first->be_prev = NULL;
+	
+	if(elem == blist->bl_last)
+		blist->bl_last = NULL;
 
 	elem->be_prev = NULL;
 	elem->be_next = NULL;
@@ -142,6 +160,9 @@ blist_rpop(blist_t *blist)
 	blist->bl_last = elem->be_prev;
 	if(blist->bl_last)
 		blist->bl_last->be_next = NULL;
+
+	if(elem == blist->bl_first)
+		blist->bl_first = NULL;
 
 	elem->be_prev = NULL;
 	elem->be_next = NULL;
