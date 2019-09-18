@@ -28,19 +28,29 @@ blist_uninit(blist_t **blist, int freedata)
 	 * freed with a single free(), then set freedata to nonzero, and
 	 * this function takes care of it. */
 
-	blelem_t	*elem;
-
 	if(blist == NULL || *blist == NULL)
 		return;
 
-	while((elem = blist_lpop(*blist))) {
+	blist_clear(*blist, freedata);
+
+	free(*blist);
+	*blist = NULL;
+}
+
+
+void
+blist_clear(blist_t *blist, int freedata)
+{
+	blelem_t	*elem;
+
+	if(blist == NULL)
+		return;
+
+	while((elem = blist_lpop(blist))) {
 		if(elem->be_data != NULL && freedata)
 			free(elem->be_data);
 		free(elem);	
 	}
-
-	free(*blist);
-	*blist = NULL;
 }
 
 

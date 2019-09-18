@@ -17,6 +17,7 @@ typedef struct blist {
 
 blist_t *blist_init(void);
 void blist_uninit(blist_t **, int);
+void blist_clear(blist_t *, int);
 
 int blist_lpush(blist_t *, void *);
 int blist_rpush(blist_t *, void *);
