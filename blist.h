@@ -16,17 +16,22 @@ typedef struct blist {
 
 
 blist_t *blist_init(void);
-void blist_uninit(blist_t **, int);
-void blist_clear(blist_t *, int);
+
+
+/* NOTE: decided to not have a blist_clear(). This is because we don't know
+ * how to free up the payload. Also note that blist_uninit() should only be
+ * called when the list is empty. Perhaps later if better cleanup functions
+ * are really needed then we can introduce a callback for the freeing.
+ * void blist_clear(blist_t *, int);
+ */
+void blist_uninit(blist_t **);
 
 int blist_lpush(blist_t *, void *);
 int blist_rpush(blist_t *, void *);
 
-blelem_t *blist_lpop(blist_t *);
-blelem_t *blist_rpop(blist_t *);
+void *blist_lpop(blist_t *);
+void *blist_rpop(blist_t *);
 
-int blist_insertafter(blist_t *, blelem_t *, void *);
-int blist_delelem(blist_t *, blelem_t *);
 blelem_t *blist_getidx(blist_t *, int);
 
 #endif

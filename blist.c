@@ -20,37 +20,17 @@ blist_init(void)
 
 
 void
-blist_uninit(blist_t **blist, int freedata)
+blist_uninit(blist_t **blist)
 {
-	/* This function should be either called when the list has been
-	 * emtpied by the caller by freeing the elements' payload and the
-	 * freedata argument set to 0. Or, if the payload is simple and can be
-	 * freed with a single free(), then set freedata to nonzero, and
-	 * this function takes care of it. */
+	/* This function does not know how to free the payload! Therefore it
+	 * should be only called when the list has been emtpied!
+	 * (Maybe later we will introduct a callback for the freeing.) */
 
 	if(blist == NULL || *blist == NULL)
 		return;
 
-	blist_clear(*blist, freedata);
-
 	free(*blist);
 	*blist = NULL;
-}
-
-
-void
-blist_clear(blist_t *blist, int freedata)
-{
-	blelem_t	*elem;
-
-	if(blist == NULL)
-		return;
-
-	while((elem = blist_lpop(blist))) {
-		if(elem->be_data != NULL && freedata)
-			free(elem->be_data);
-		free(elem);	
-	}
 }
 
 
@@ -117,10 +97,11 @@ blist_rpush(blist_t *blist, void *data)
 }
 
 
-blelem_t *
+void *
 blist_lpop(blist_t *blist)
 {
 	blelem_t	*elem;
+	void		*retdata;
 
 	if(blist == NULL)
 		return NULL;
@@ -141,14 +122,19 @@ blist_lpop(blist_t *blist)
 
 	--blist->bl_cnt;
 
-	return elem;
+	retdata = elem->be_data;
+
+	free(elem);
+
+	return retdata;
 }
 
 
-blelem_t *
+void *
 blist_rpop(blist_t *blist)
 {
 	blelem_t	*elem;
+	void		*retdata;
 
 	if(blist == NULL)
 		return NULL;
@@ -169,7 +155,11 @@ blist_rpop(blist_t *blist)
 
 	--blist->bl_cnt;
 
-	return elem;
+	retdata = elem->be_data;
+
+	free(elem);
+
+	return retdata;
 }
 
 
