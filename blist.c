@@ -42,7 +42,7 @@ blist_lpush(blist_t *blist, void *data)
 	if(blist == NULL || data == NULL)
 		return EINVAL;
 
-	elem = malloc(sizeof(elem));
+	elem = malloc(sizeof(blelem_t));
 	memset(elem, 0, sizeof(blelem_t));
 
 	elem->be_data = data;
@@ -73,7 +73,7 @@ blist_rpush(blist_t *blist, void *data)
 	if(blist == NULL || data == NULL)
 		return EINVAL;
 
-	elem = malloc(sizeof(elem));
+	elem = malloc(sizeof(blelem_t));
 	memset(elem, 0, sizeof(blelem_t));
 
 	elem->be_data = data;
