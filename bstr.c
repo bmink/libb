@@ -168,6 +168,28 @@ bstrlen(bstr_t *bstr)
 }
 
 
+int
+bstrlen_utf8(bstr_t *bstr)
+{
+	int	i;
+	int	len;
+
+	if(bstr == NULL)
+		return 0;
+
+	len = 0;
+	for(i = 0; i < bstr->bs_len; ++i) {
+
+		/* Ignore continuation characters. */
+		if((bstr->bs_str[i] & 0xc0) != 0x80)
+			++len;
+
+	}
+
+	return len;
+}
+
+
 char *bget(bstr_t *bstr)
 {
 	if(bstr == NULL)
@@ -336,16 +358,20 @@ xstrcasebeginswith(const char *str, const char *substr)
 
 
 int
-xstrmakefixedwidth(const char *str, char *buf, int size)
+xstrtomaxlen(const char *str, char *buf, int size, int ellipsis)
 {
 	int	tocopy;
 	int	cut;
 
-	if(xstrempty(str) || buf == NULL || size < 7)
+	if(xstrempty(str) || buf == NULL || (ellipsis && size < 7) ||
+	    (!ellipsis && size < 2))
 		return EINVAL;
 
 	cut = 0;
-	tocopy = size - 6;
+	if(ellipsis)
+		tocopy = size - 6;
+	else
+		tocopy = size - 1;
 	if(strlen(str) < tocopy)
 		tocopy = strlen(str);
 	else
@@ -353,7 +379,7 @@ xstrmakefixedwidth(const char *str, char *buf, int size)
 
 	memset(buf, ' ', size);
 	strncpy(buf, str, tocopy);
-	if(cut)
+	if(cut && ellipsis)
 		sprintf(buf + tocopy, "[...]");
 
 	buf[size - 1] = 0;
@@ -706,7 +732,7 @@ bstrpad(bstr_t *bstr, size_t nlen, char padc)
 	if(bstr == NULL)
 		return EINVAL;
 
-	while(bstrlen(bstr) < nlen)
+	while(bstrlen_utf8(bstr) < nlen)
 		bprintf(bstr, "%c", padc);
 
 	return 0;
@@ -777,16 +803,21 @@ bstrremhtml(bstr_t *text, bstr_t *res)
 
 
 int
-bstrmakefixedwidth(bstr_t *old, bstr_t *new, int size)
+bstrtomaxlen(bstr_t *old, bstr_t *new, int size, int ellipsis)
 {
 	int	tocopy;
 	int	cut;
 
-	if(old == NULL || new == NULL || size < 6)
+	if(old == NULL || new == NULL || (ellipsis && size < 6) ||
+	    (!ellipsis && size < 1))
 		return EINVAL;
 
 	cut = 0;
-	tocopy = size - 6;
+	if(ellipsis)
+		tocopy = size - 5;
+	else
+		tocopy = size;
+	
 	if(bstrlen(old) < tocopy)
 		tocopy = bstrlen(old);
 	else
@@ -795,7 +826,7 @@ bstrmakefixedwidth(bstr_t *old, bstr_t *new, int size)
 	bclear(new);
 	bmemcat(new, bget(old), tocopy);
 
-	if(cut)
+	if(cut && ellipsis)
 		bstrcat(new, "[...]");
 
 	return 0;

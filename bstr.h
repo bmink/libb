@@ -35,6 +35,7 @@ int bvprintf(bstr_t *, const char *, va_list);
 char *bget(bstr_t *);
 
 int bstrlen(bstr_t *);
+int bstrlen_utf8(bstr_t *);
 int bstrempty(bstr_t *);
 int bstrtolower(bstr_t *);
 int bstrendswith(bstr_t *, const char *);
@@ -49,7 +50,7 @@ int bfromfile(bstr_t *, const char *);
 int bfromfilep(bstr_t *, FILE *);
 int bfromfiled(bstr_t *, int);
 
-int bstrmakefixedwidth(bstr_t *, bstr_t *, int);
+int bstrtomaxlen(bstr_t *, bstr_t *, int, int);
 int bstrlimitlines(bstr_t *, bstr_t *, int);
 int bstrremhtml(bstr_t *, bstr_t *);
 
@@ -66,7 +67,7 @@ int xstrendswith(const char *, const char *);
 int xstrbeginswith(const char *, const char *);
 int xstrcasebeginswith(const char *, const char *);
 int xstrbeginswithn(const char *, const char *);
-int xstrmakefixedwidth(const char *, char *, int);
+int xstrtomaxlen(const char *, char *, int, int);
 int xstrstr(const char *, const char *);
 int xstrcasestr(const char *, const char *);
 char *xstrdup(const char *);
