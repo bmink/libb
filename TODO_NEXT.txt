@@ -1,0 +1,3 @@
+b/xstrtomaxlen doesn't understand utf-8 so it can clobber uft8 chars. Add _utf8
+versions.
+
