@@ -51,6 +51,7 @@ int bfromfilep(bstr_t *, FILE *);
 int bfromfiled(bstr_t *, int);
 
 int bstrtomaxlen(bstr_t *, bstr_t *, int, int);
+int bstrtomaxlen_utf8(bstr_t *, bstr_t *, int, int);
 int bstrlimitlines(bstr_t *, bstr_t *, int);
 int bstrremhtml(bstr_t *, bstr_t *);
 
@@ -68,6 +69,8 @@ int xstrbeginswith(const char *, const char *);
 int xstrcasebeginswith(const char *, const char *);
 int xstrbeginswithn(const char *, const char *);
 int xstrtomaxlen(const char *, char *, int, int);
+/* NOTE: xstrtomaxlen_utf8 is not provided. That's hard (and risky) to do with
+ * straight up buffers. Use bstrtomaxlen_utf8 instead. */
 int xstrstr(const char *, const char *);
 int xstrcasestr(const char *, const char *);
 char *xstrdup(const char *);

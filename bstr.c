@@ -834,6 +834,72 @@ bstrtomaxlen(bstr_t *old, bstr_t *new, int size, int ellipsis)
 
 
 int
+bstrtomaxlen_utf8(bstr_t *old, bstr_t *new, int size, int ellipsis)
+{
+	int	tocopy;
+	int	tocopy_bytes;
+	int	charcnt;
+	int	cut;
+	char	*beg;
+	char	*ch;
+	char	*end;
+
+	if(old == NULL || new == NULL || (ellipsis && size < 6) ||
+	    (!ellipsis && size < 1))
+		return EINVAL;
+
+	cut = 0;
+	if(ellipsis)
+		tocopy = size - 5;
+	else
+		tocopy = size;
+	
+	if(bstrlen_utf8(old) < tocopy)
+		tocopy = bstrlen_utf8(old);
+	else
+		cut++;
+
+	/* Count how many actual bytes we have to copy. */
+	beg = bget(old);
+	end = beg + old->bs_len;
+	charcnt = 0;
+	for(ch = beg; ch < end; ++ch) {
+
+		/* Note: It's important to compare here and not at the end of
+		 * the loop because we need to do it after ch was incremented
+		 * by the loop so the byte counting math is correct. */
+		if(charcnt >= tocopy)
+			break;
+
+		/* If it's a continuation character, don't increment char
+		 * count */
+                if((*ch & 0xc0) != 0x80)
+                        ++charcnt;
+	}
+
+	/* In case we're in the middle of a multi-byte character, walk to the
+	 * end */
+	while(ch < end && ((*ch & 0xc0) == 0xc0 || (*ch & 0xc0) == 0x80))
+		++ch;
+
+	tocopy_bytes = ch - beg;
+
+	bclear(new);
+	bmemcat(new, bget(old), tocopy_bytes);
+
+	if(cut && ellipsis)
+		bstrcat(new, "[...]");
+
+#if 0
+printf("len=%d, tocopy=%d, tocopy_bytes=%d\n", bstrlen_utf8(old), tocopy, tocopy_bytes);
+#endif
+
+
+	return 0;
+}
+
+
+int
 bstrlimitlines(bstr_t *old, bstr_t *new, int maxlines)
 {
 	int	lcnt;
