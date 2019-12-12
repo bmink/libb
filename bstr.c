@@ -111,6 +111,16 @@ bmemcat(bstr_t *bstr, const char *mem, size_t len)
 
 
 int
+bputc(bstr_t *bstr, const char ch)
+{
+	if(!bstr)
+		return EINVAL;
+
+	return bmemcat(bstr, &ch, sizeof(char));
+}
+
+
+int
 bstrcat(bstr_t *bstr, const char *str)
 {
 	if(str == NULL)	
@@ -923,4 +933,136 @@ bstrlimitlines(bstr_t *old, bstr_t *new, int maxlines)
 	}
 
 	return 0;
+}
+
+#define XSPA_BETWEEN_ARGS	0
+#define XSPA_IN_QUOTED_ARG	1
+#define XSPA_IN_NONQUOTED_ARG	2
+
+int
+xstrparseargs(const char *str, barr_t **res)
+{
+/*
+ * Parses a string of arguments (quoted or unquoted) into an array of bstr_t.
+ */
+	int		err;
+	barr_t		*arr;
+	bstr_t		*elem;
+	int		state;
+	const char	*ch;
+
+	if(xstrempty(str))
+		return EINVAL;
+
+	elem = NULL;
+	err = 0;
+
+        arr = barr_init(sizeof(bstr_t));
+        if(arr == NULL) {
+                err = ENOENT;
+                goto end_label;
+        }
+
+	state = XSPA_BETWEEN_ARGS;
+
+	for(ch = str; *ch != 0; ++ch) {
+		switch(state) {
+
+		case XSPA_BETWEEN_ARGS:
+			if(isspace(*ch))
+				continue;
+
+			/* It's not a space char, which means there's a new
+			 * argument starting. */
+			elem = binit();
+			if(!elem) {
+				err = ENOMEM;
+				goto end_label;
+			}
+
+			if(*ch == '"') 
+				state = XSPA_IN_QUOTED_ARG;
+			else {
+				state = XSPA_IN_NONQUOTED_ARG;
+				bputc(elem, *ch);
+			}
+
+			continue;
+
+		case XSPA_IN_NONQUOTED_ARG:
+			if(isspace(*ch)) {
+				/* Argument ending. */
+				barr_add(arr, elem);
+				elem = NULL;
+				state = XSPA_BETWEEN_ARGS;
+				continue;
+			}
+			bputc(elem, *ch);
+			continue;
+
+		case XSPA_IN_QUOTED_ARG:
+			if(*ch == '"') {
+				/* Argument ending. */
+				barr_add(arr, elem);
+				elem = NULL;
+				state = XSPA_BETWEEN_ARGS;
+				continue;
+			}
+
+			if(*ch == '\\') {
+				/* Deal with escaped chars. */
+				++ch;
+				if(!*ch) {
+					/* String ends too soon. */
+					err = ENODATA;
+					goto end_label;
+				}
+				
+				if(*ch == '"') { 
+					bputc(elem, '"');
+					continue;
+				} else
+				if(*ch == '\\') { 
+					bputc(elem, '\\');
+					continue;
+				} else {
+					err = ENOENT;
+					goto end_label;
+				}
+				
+			} else {
+				bputc(elem, *ch);
+				continue;
+			}
+		}
+	}
+	
+	if(state == XSPA_IN_QUOTED_ARG) {
+		/* String ended in the middle of a quoted argument. */
+		err = ESRCH;
+		goto end_label;
+	} else if(state == XSPA_IN_NONQUOTED_ARG) {
+		/* Add last argument. */
+		barr_add(arr, elem);
+		elem = NULL;
+	}
+
+end_label:
+
+	if(err != 0) {
+		buninit(&elem);
+		if(arr != NULL) {
+			for(elem = (bstr_t *) barr_begin(arr);
+			    elem < (bstr_t *) barr_end(arr);
+			    ++elem) {
+				buninit_(elem);
+			}
+			barr_uninit(&arr);
+		}
+	} else {
+		*res = arr;
+	}
+
+	return err;
+
 }

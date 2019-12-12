@@ -31,6 +31,7 @@ int bstrcat(bstr_t *, const char *);
 int bmemcat(bstr_t *, const char *, size_t);
 int bprintf(bstr_t *, const char *, ...);
 int bvprintf(bstr_t *, const char *, va_list);
+int bputc(bstr_t *, const char);
 
 char *bget(bstr_t *);
 
@@ -77,5 +78,7 @@ char *xstrdup(const char *);
 int xatoi(const char *);
 void *memdup(const void *, size_t);
 int xstrsplit(const char *, const char *, int, barr_t **);
+
+int xstrparseargs(const char *, barr_t **);
  
 #endif
