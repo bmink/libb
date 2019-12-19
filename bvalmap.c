@@ -5,7 +5,7 @@
 
 
 int
-bvalmap_validint(bvalmap_t *vm, int val)
+bvalmap_isvalidint(bvalmap_t *vm, int val)
 {
 	bvalmap_t	*cur;
 
@@ -22,7 +22,7 @@ bvalmap_validint(bvalmap_t *vm, int val)
 
 
 int
-bvalmap_validstr(bvalmap_t *vm, char *str)
+bvalmap_isvalidstr(bvalmap_t *vm, char *str)
 {
 	bvalmap_t	*cur;
 

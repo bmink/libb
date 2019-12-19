@@ -11,8 +11,8 @@ typedef struct bvalmap {
 } bvalmap_t;
 
 
-int bvalmap_validint(bvalmap_t *, int);
-int bvalmap_validstr(bvalmap_t *, char *);
+int bvalmap_isvalidint(bvalmap_t *, int);
+int bvalmap_isvalidstr(bvalmap_t *, char *);
 
 int bvalmap_getstr(bvalmap_t *, int, char **);
 int bvalmap_getint(bvalmap_t *, char *, int *);
