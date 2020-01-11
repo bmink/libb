@@ -521,7 +521,7 @@ bfromfiled(bstr_t *bstr, int filedesc)
 
 	f = fdopen(filedesc, "r");
 	if(f == NULL)
-		return EINVAL;
+		return errno;
 
 	ret = bfromfilep(bstr, f);
 	
