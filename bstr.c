@@ -543,7 +543,7 @@ bfromfile(bstr_t *bstr, const char *filen)
 
 	f = fopen(filen, "r");
 	if(f == NULL)
-		return ENOEXEC;
+		return errno;
 
 	ret = bfromfilep(bstr, f); 
 
