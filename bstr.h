@@ -58,6 +58,7 @@ int bstrremhtml(bstr_t *, bstr_t *);
 
 int xfree(char **);
 int xstrcmp(const char *, const char *);
+int xstrncmp(const char *, const char *, size_t);
 int xstrcasecmp(const char *, const char *);
 int xstrncasecmp(const char *, const char *, size_t);
 int xstrlen(const char *);

@@ -264,6 +264,15 @@ xstrcmp(const char *str1, const char *str2)
 
 
 int
+xstrncmp(const char *str1, const char *str2, size_t n)
+{
+	if(str1 == NULL || str2 == NULL)
+		return 0;
+	return strncmp(str1, str2, n);
+}
+
+
+int
 xstrcasecmp(const char *str1, const char *str2)
 {
 	if(str1 == NULL || str2 == NULL)
