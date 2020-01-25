@@ -1,10 +1,12 @@
 #include <curl/curl.h>
 #include <errno.h>
+#include "bcurl.h"
 #include "bstr.h"
 #include "blog.h"
 
 #define HTTP_RESP_OK	200
 
+struct curl_slist	*bcurl_headers;
 
 int
 bcurl_init(void)
@@ -24,10 +26,39 @@ bcurl_init(void)
 int
 bcurl_uninit(void)
 {
+	bcurl_header_clearall();
 	curl_global_cleanup();
+		
 	return 0;
 }
 
+int
+bcurl_header_add(const char *hdr)
+{
+	struct curl_slist *ret;
+
+	ret = curl_slist_append(bcurl_headers, hdr);
+	if(ret == NULL) {
+		blogf("curl_slist_append returned NULL");
+		return ENOEXEC;
+	}
+
+	bcurl_headers = ret;
+
+	return 0;
+}
+
+int
+bcurl_header_clearall()
+{
+	if(bcurl_headers == NULL)
+		return 0;
+
+	curl_slist_free_all(bcurl_headers);
+	bcurl_headers = NULL;
+
+	return 0;	
+}
 
 size_t
 bcurl_callback(void *buffer, size_t size, size_t nmemb, void *userdata)
@@ -101,6 +132,15 @@ bcurl_get(const char *url, bstr_t **docp)
 	ret = curl_easy_setopt(mycurl, CURLOPT_WRITEDATA, (void *)buf);
 	if(ret != 0) {
 		blogf("Could not set libcurl callback: %s\n",
+		    curl_easy_strerror(ret));
+		err = ENOEXEC;
+		goto end_label;
+	}
+
+	ret = curl_easy_setopt(mycurl, CURLOPT_HTTPHEADER,
+	    (void *)bcurl_headers);
+	if(ret != 0) {
+		blogf("Could not set custom headers: %s\n",
 		    curl_easy_strerror(ret));
 		err = ENOEXEC;
 		goto end_label;
