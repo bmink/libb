@@ -1,8 +1,9 @@
 CFLAGS = -g -Wall -Wstrict-prototypes -D_GNU_SOURCE
 
-libb: bstr.o barr.o btime.o bcurl.o blog.o bint.o bfs.o blist.o bvalmap.o
+libb: bstr.o barr.o btime.o bcurl.o blog.o bint.o bfs.o blist.o bvalmap.o \
+	bjson.o
 	ar rc libb.a bstr.o barr.o btime.o bcurl.o blog.o bint.o bfs.o blist.o \
-		bvalmap.o && ranlib libb.a
+		bvalmap.o bjson.o && ranlib libb.a
 
 install: libb
 	cp libb.a ~/lib; cp *.h ~/include
