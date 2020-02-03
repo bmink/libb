@@ -73,6 +73,7 @@ int xstrbeginswithn(const char *, const char *);
 int xstrtomaxlen(const char *, char *, int, int);
 /* NOTE: xstrtomaxlen_utf8 is not provided. That's hard (and risky) to do with
  * straight up buffers. Use bstrtomaxlen_utf8 instead. */
+char *xstrchr(const char *, int);
 int xstrstr(const char *, const char *);
 int xstrcasestr(const char *, const char *);
 char *xstrdup(const char *);
@@ -81,5 +82,5 @@ void *memdup(const void *, size_t);
 int xstrsplit(const char *, const char *, int, barr_t **);
 
 int xstrparseargs(const char *, barr_t **);
- 
+
 #endif

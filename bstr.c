@@ -631,6 +631,16 @@ xstcaserstr(const char *haystack, const char *needle)
 }
 
 
+char *
+xstrchr(const char *str, int ch)
+{
+	if(xstrempty(str))
+		return NULL;
+
+	return strchr(str, ch);
+}
+
+
 int
 xstrsplit(const char *str, const char *sep, int ignoreempty, barr_t **res)
 {
