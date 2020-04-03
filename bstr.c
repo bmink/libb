@@ -255,6 +255,42 @@ bstrcasebeginswith(bstr_t *bstr, const char *substr)
 
 
 int
+bstrchop(bstr_t *bstr, int cnt)
+{
+	int	tochop;
+
+	if(bstr == NULL || cnt == 0)
+		return EINVAL;
+
+	if(bstrempty(bstr))
+		return 0;
+
+	tochop = bstrlen(bstr)<cnt?bstrlen(bstr):cnt;
+
+	bstr->bs_str[bstr->bs_len - tochop] = 0;
+	bstr->bs_len -= tochop;
+
+	return 0;
+}
+
+
+int
+bstrchopnewline(bstr_t *bstr)
+{
+	if(bstr == NULL)
+		return EINVAL;		
+
+	if(bstrempty(bstr))
+		return 0;
+
+	while(bstrendswith(bstr, "\n") || bstrendswith(bstr, "\r"))
+		bstrchop(bstr, 1);
+
+	return 0;
+}
+
+
+int
 xstrcmp(const char *str1, const char *str2)
 {
 	if(str1 == NULL || str2 == NULL)
