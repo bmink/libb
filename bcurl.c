@@ -214,6 +214,8 @@ bcurl_rcallback(char *buf, size_t size, size_t nitems, void *userdata)
 int
 bcurl_put(const char *url, bstr_t *putdata, bstr_t **docp)
 {
+	/* NOTE: uploading non-empty putdata is untested, so expect to find
+	 * issues when using for the first time. */
 	CURL	*mycurl;
 	long	respcode;
 	bstr_t	*buf;
