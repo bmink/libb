@@ -76,7 +76,7 @@ buninit_(bstr_t *bstr)
 
 
 int
-bmemcat(bstr_t *bstr, const char *mem, size_t len)
+bmemcat(bstr_t *bstr, const void *mem, size_t len)
 {
 	char	*newptr;
 	size_t	neededsiz;
@@ -269,6 +269,44 @@ bstrchop(bstr_t *bstr, int cnt)
 
 	bstr->bs_str[bstr->bs_len - tochop] = 0;
 	bstr->bs_len -= tochop;
+
+	return 0;
+}
+
+
+int
+bstrchopl(bstr_t *bstr, int cnt)
+{
+	/* Chop bytes from the beginning */
+
+	size_t	newsiz;
+	char	*newbuf;
+
+	if(bstr == NULL || cnt == 0)
+		return EINVAL;
+
+	if(bstrempty(bstr))
+		return 0;
+
+	if(cnt >= bstrlen(bstr)) {
+		bclear(bstr);
+		return 0;
+	}
+
+	newsiz = bstrlen(bstr) - cnt + 1;
+	if(newsiz < BSTR_INITSIZE)
+		newsiz = BSTR_INITSIZE;
+
+	newbuf = malloc(newsiz);
+	if(newbuf == NULL)
+		return ENOMEM;
+
+	memcpy(newbuf, bstr->bs_str + cnt, bstr->bs_len - cnt);
+	free(bstr->bs_str);
+	bstr->bs_str = newbuf;
+	bstr->bs_len -= cnt;
+	bstr->bs_str[bstr->bs_len] = 0;
+	bstr->bs_siz = newsiz;
 
 	return 0;
 }

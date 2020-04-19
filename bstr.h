@@ -28,7 +28,7 @@ void buninit_(bstr_t *);
 void bclear(bstr_t *);
 
 int bstrcat(bstr_t *, const char *);
-int bmemcat(bstr_t *, const char *, size_t);
+int bmemcat(bstr_t *, const void *, size_t);
 int bprintf(bstr_t *, const char *, ...);
 int bvprintf(bstr_t *, const char *, va_list);
 int bputc(bstr_t *, const char);
@@ -45,6 +45,7 @@ int bstrcasebeginswith(bstr_t *, const char *);
 int bstrsplit(bstr_t *, const char *, int, barr_t **);
 int bstrpad(bstr_t *, size_t, char);
 int bstrchop(bstr_t *, int);
+int bstrchopl(bstr_t *, int);
 int bstrchopnewline(bstr_t *);
 
 int btofile(const char *, bstr_t *);
