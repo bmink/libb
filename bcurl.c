@@ -115,7 +115,7 @@ bcurl_get(const char *url, bstr_t **docp)
 
 	ret = curl_easy_setopt(mycurl, CURLOPT_URL, url);
 	if(ret != 0) {
-		blogf("Could not set URL in llibcurl: %s\n",
+		blogf("Could not set URL in libcurl: %s\n",
 		    curl_easy_strerror(ret));
 		err = ENOEXEC;
 		goto end_label;
@@ -246,6 +246,14 @@ bcurl_put(const char *url, bstr_t *putdata, bstr_t **docp)
 		goto end_label;
         }
 
+	ret = curl_easy_setopt(mycurl, CURLOPT_URL, url);
+	if(ret != 0) {
+		blogf("Could not set URL in libcurl: %s\n",
+		    curl_easy_strerror(ret));
+		err = ENOEXEC;
+		goto end_label;
+	}
+
         ret = curl_easy_setopt(mycurl, CURLOPT_WRITEFUNCTION, bcurl_wcallback);
         if(ret != 0) {
                 blogf("Could not set libcurl write callback: %s\n",
@@ -264,7 +272,7 @@ bcurl_put(const char *url, bstr_t *putdata, bstr_t **docp)
 
 	ret = curl_easy_setopt(mycurl, CURLOPT_UPLOAD, 1);
 	if(ret != 0) {
-		blogf("Could not set CURLOPT_UPLOAD in llibcurl: %s\n",
+		blogf("Could not set CURLOPT_UPLOAD in libcurl: %s\n",
 		    curl_easy_strerror(ret));
 		err = ENOEXEC;
 		goto end_label;
@@ -324,7 +332,7 @@ bcurl_put(const char *url, bstr_t *putdata, bstr_t **docp)
 		goto end_label;
 	}
 
-	if(respcode != HTTP_RESP_OK) {
+	if(respcode != 200 && respcode != 204) {
 		blogf("Error response code received: %ld\n", respcode);
 		err = ENOEXEC;
 		goto end_label;
