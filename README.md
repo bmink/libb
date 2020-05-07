@@ -42,12 +42,16 @@ arr = barr_init(sizeof(bstr_t));
 /* Adding */
 elem = binit();
 barr_add(arr, elem);
+free(elem);
 elem = binit();
 barr_add(arr, elem);
+free(elem);
 elem = binit();
 barr_add(arr, elem);
+free(elem);
 elem = binit();
 barr_add(arr, elem);
+free(elem);
 
 /* Reading */
 for(elem = (bstr_t *) barr_begin(arr);
