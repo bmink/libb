@@ -47,6 +47,7 @@ int bstrpad(bstr_t *, size_t, char);
 int bstrchop(bstr_t *, int);
 int bstrchopl(bstr_t *, int);
 int bstrchopnewline(bstr_t *);
+int bstrchopwspc(bstr_t *);
 
 int btofile(const char *, bstr_t *);
 int btofilep(FILE *, bstr_t *);

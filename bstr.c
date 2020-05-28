@@ -329,6 +329,24 @@ bstrchopnewline(bstr_t *bstr)
 
 
 int
+bstrchopwspc(bstr_t *bstr)
+{
+	if(bstr == NULL)
+		return EINVAL;		
+
+	if(bstrempty(bstr))
+		return 0;
+
+	while(bstrendswith(bstr, "\n") || bstrendswith(bstr, "\r") ||
+	    bstrendswith(bstr, " ") || bstrendswith(bstr, "\t"))
+		bstrchop(bstr, 1);
+
+	return 0;
+}
+
+
+
+int
 xstrcmp(const char *str1, const char *str2)
 {
 	if(str1 == NULL || str2 == NULL)
