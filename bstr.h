@@ -40,6 +40,8 @@ int bstrlen_utf8(bstr_t *);
 int bstrempty(bstr_t *);
 int bstrtolower(bstr_t *);
 int bstrendswith(bstr_t *, const char *);
+int bstrcmp(bstr_t *, const char *);
+int bstrcasecmp(bstr_t *, const char *);
 int bstrbeginswith(bstr_t *, const char *);
 int bstrcasebeginswith(bstr_t *, const char *);
 int bstrsplit(bstr_t *, const char *, int, barr_t **);

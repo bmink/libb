@@ -1177,3 +1177,25 @@ end_label:
 	return err;
 
 }
+
+
+int
+bstrcmp(bstr_t *bstr, const char *str)
+{
+	if(!bstr || !str)
+		return 0;
+
+	return xstrcmp(bget(bstr), str);
+}
+
+
+int
+bstrcasecmp(bstr_t *bstr, const char *str)
+{
+	if(!bstr || !str)
+		return 0;
+
+	return xstrcasecmp(bget(bstr), str);
+}
+
+
