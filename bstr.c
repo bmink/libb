@@ -140,29 +140,34 @@ bstrcat_entenc(bstr_t *bstr, const char *str)
 
 	c = str;
 
-	switch(*c) {
-	case '<':
-		bstrcat(bstr, "&lt;");
-		break;
+	while(*c) {
 
-	case '>':
-		bstrcat(bstr, "&gt;");
-		break;
+		switch(*c) {
+		case '<':
+			bstrcat(bstr, "&lt;");
+			break;
 
-	case '\'':
-		bstrcat(bstr, "&apos;");
-		break;
+		case '>':
+			bstrcat(bstr, "&gt;");
+			break;
 
-	case '"':
-		bstrcat(bstr, "&quot;");
-		break;
+		case '\'':
+			bstrcat(bstr, "&apos;");
+			break;
 
-	case '&':
-		bstrcat(bstr, "&amp;");
-		break;
+		case '"':
+			bstrcat(bstr, "&quot;");
+			break;
 
-	default:
-		bputc(bstr, *c);
+		case '&':
+			bstrcat(bstr, "&amp;");
+			break;
+
+		default:
+			bputc(bstr, *c);
+		}
+
+		++c;
 	}
 
 	return 0;
