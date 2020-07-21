@@ -28,6 +28,7 @@ void buninit_(bstr_t *);
 void bclear(bstr_t *);
 
 int bstrcat(bstr_t *, const char *);
+int bstrcat_entenc(bstr_t *, const char *);
 int bmemcat(bstr_t *, const void *, size_t);
 int bprintf(bstr_t *, const char *, ...);
 int bvprintf(bstr_t *, const char *, va_list);

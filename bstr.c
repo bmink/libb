@@ -131,6 +131,44 @@ bstrcat(bstr_t *bstr, const char *str)
 
 
 int
+bstrcat_entenc(bstr_t *bstr, const char *str)
+{
+	const char *c;
+
+	if(bstr == NULL || str == NULL)	
+		return EINVAL;
+
+	c = str;
+
+	switch(*c) {
+	case '<':
+		bstrcat(bstr, "&lt;");
+		break;
+
+	case '>':
+		bstrcat(bstr, "&gt;");
+		break;
+
+	case '\'':
+		bstrcat(bstr, "&apos;");
+		break;
+
+	case '"':
+		bstrcat(bstr, "&quot;");
+		break;
+
+	case '&':
+		bstrcat(bstr, "&amp;");
+		break;
+
+	default:
+		bputc(bstr, *c);
+	}
+
+	return 0;
+}
+
+int
 bvprintf(bstr_t *bstr, const char *format, va_list arglist)
 {
 	int		ret;
