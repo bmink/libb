@@ -173,6 +173,7 @@ bstrcat_entenc(bstr_t *bstr, const char *str)
 	return 0;
 }
 
+
 int
 bvprintf(bstr_t *bstr, const char *format, va_list arglist)
 {

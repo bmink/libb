@@ -106,12 +106,12 @@ bcurl_get(const char *url, bstr_t **docp)
 		goto end_label;
 	}
 
-        mycurl = curl_easy_init();
-        if(mycurl == NULL) {
-                blogf("Could not initialize libcurl_easy\n");
+	mycurl = curl_easy_init();
+	if(mycurl == NULL) {
+		blogf("Could not initialize libcurl_easy\n");
 		err = ENOEXEC;
 		goto end_label;
-        }
+	}
 
 	ret = curl_easy_setopt(mycurl, CURLOPT_URL, url);
 	if(ret != 0) {
@@ -121,13 +121,13 @@ bcurl_get(const char *url, bstr_t **docp)
 		goto end_label;
 	}
 
-        ret = curl_easy_setopt(mycurl, CURLOPT_WRITEFUNCTION, bcurl_wcallback);
-        if(ret != 0) {
-                blogf("Could not set libcurl write callback: %s\n",
+	ret = curl_easy_setopt(mycurl, CURLOPT_WRITEFUNCTION, bcurl_wcallback);
+	if(ret != 0) {
+		blogf("Could not set libcurl write callback: %s\n",
 		    curl_easy_strerror(ret));
 		err = ENOEXEC;
-                goto end_label;
-        }
+		goto end_label;
+	}
 
 	ret = curl_easy_setopt(mycurl, CURLOPT_WRITEDATA, (void *)buf);
 	if(ret != 0) {
@@ -211,6 +211,7 @@ bcurl_rcallback(char *buf, size_t size, size_t nitems, void *userdata)
 	return tocopy;
 }
 
+
 int
 bcurl_put(const char *url, bstr_t *putdata, bstr_t **docp)
 {
@@ -239,12 +240,12 @@ bcurl_put(const char *url, bstr_t *putdata, bstr_t **docp)
 		goto end_label;
 	}
 
-        mycurl = curl_easy_init();
-        if(mycurl == NULL) {
-                blogf("Could not initialize libcurl_easy\n");
+	mycurl = curl_easy_init();
+	if(mycurl == NULL) {
+		blogf("Could not initialize libcurl_easy\n");
 		err = ENOEXEC;
 		goto end_label;
-        }
+	}
 
 	ret = curl_easy_setopt(mycurl, CURLOPT_URL, url);
 	if(ret != 0) {
@@ -254,13 +255,13 @@ bcurl_put(const char *url, bstr_t *putdata, bstr_t **docp)
 		goto end_label;
 	}
 
-        ret = curl_easy_setopt(mycurl, CURLOPT_WRITEFUNCTION, bcurl_wcallback);
-        if(ret != 0) {
-                blogf("Could not set libcurl write callback: %s\n",
+	ret = curl_easy_setopt(mycurl, CURLOPT_WRITEFUNCTION, bcurl_wcallback);
+	if(ret != 0) {
+		blogf("Could not set libcurl write callback: %s\n",
 		    curl_easy_strerror(ret));
 		err = ENOEXEC;
-                goto end_label;
-        }
+		goto end_label;
+	}
 
 	ret = curl_easy_setopt(mycurl, CURLOPT_WRITEDATA, (void *)buf);
 	if(ret != 0) {
@@ -278,13 +279,13 @@ bcurl_put(const char *url, bstr_t *putdata, bstr_t **docp)
 		goto end_label;
 	}
 
-        ret = curl_easy_setopt(mycurl, CURLOPT_READFUNCTION, bcurl_rcallback);
-        if(ret != 0) {
-                blogf("Could not set libcurl read callback: %s\n",
+	ret = curl_easy_setopt(mycurl, CURLOPT_READFUNCTION, bcurl_rcallback);
+	if(ret != 0) {
+		blogf("Could not set libcurl read callback: %s\n",
 		    curl_easy_strerror(ret));
 		err = ENOEXEC;
-                goto end_label;
-        }
+		goto end_label;
+	}
 
 	ret = curl_easy_setopt(mycurl, CURLOPT_READDATA, (void *)putdata);
 	if(ret != 0) {
@@ -351,4 +352,49 @@ end_label:
 		buninit(&buf);
 
 	return err;
+}
+
+
+int
+bstrcat_urlenc(bstr_t *bstr, const char *str)
+{
+	CURL    *mycurl;
+	char	*enc;
+	int	err;
+
+	if(bstr == NULL || str == NULL)
+		return EINVAL;
+
+	err = 0;
+	mycurl = NULL;
+	enc = NULL;
+	
+	mycurl = curl_easy_init();
+	if(mycurl == NULL) {
+		blogf("Could not initialize libcurl_easy\n");
+		err = ENOEXEC;
+		goto end_label;
+	}
+
+	enc = curl_easy_escape(mycurl, str, 0);
+	
+	if(enc == NULL) {
+		blogf("Could not initialize libcurl_easy\n");
+		err = ENOEXEC;
+		goto end_label;
+	}
+
+	bstrcat(bstr, enc);
+
+end_label:
+
+	if(enc)
+		curl_free(enc);
+
+	if(mycurl) {
+		curl_easy_cleanup(mycurl);
+		mycurl = NULL;
+	}
+
+	return 0;
 }
