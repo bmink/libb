@@ -396,5 +396,5 @@ end_label:
 		mycurl = NULL;
 	}
 
-	return 0;
+	return err;
 }
