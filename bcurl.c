@@ -333,7 +333,7 @@ bcurl_put(const char *url, bstr_t *putdata, bstr_t **docp)
 		goto end_label;
 	}
 
-	if(respcode != 200 && respcode != 204) {
+	if(respcode != 200 && respcode != 202 && respcode != 204) {
 		blogf("Error response code received: %ld\n", respcode);
 		err = ENOEXEC;
 		goto end_label;
