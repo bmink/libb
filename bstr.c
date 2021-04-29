@@ -820,18 +820,20 @@ xstrsplit(const char *str, const char *sep, int ignoreempty, barr_t **res)
 
 		idx = xstrstr(str + cur, sep);
 		if(idx < 0) {
-			/* No more occurrences of sep, add rest of string
-			 * as last element. */
-			elem = binit();
-			if(elem == NULL) {
-				err = EINVAL;
-				goto end_label;
-			}
-
+			/* No more occurrences of sep, add rest of string,
+			 * if any, as last element. */
 			if(cur < len) {
-				bstrcat(elem, str + cur);
+				elem = binit();
+				if(elem == NULL) {
+					err = EINVAL;
+					goto end_label;
+				}
+
+				if(cur < len) {
+					bstrcat(elem, str + cur);
+				}
+				barr_add(arr, elem);
 			}
-			barr_add(arr, elem);
 			break;
 		} else if(idx == 0) {
 			/* This means that the separator is repeated, ie.

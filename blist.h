@@ -22,6 +22,14 @@ blist_t *blist_init(void);
  * how to free up the payload. Also note that blist_uninit() should only be
  * called when the list is empty. Perhaps later if better cleanup functions
  * are really needed then we can introduce a callback for the freeing.
+ *
+ * The list should be cleared up by something like:
+ * while(list->bl_cnt > 0) {
+ *         elem = (elem_t *) blist_rpop(list);
+ *         /* Uninit and free elem */
+ * }
+ * blist_uninit(&list);
+ *
  * void blist_clear(blist_t *, int);
  */
 void blist_uninit(blist_t **);
