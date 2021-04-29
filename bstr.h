@@ -63,6 +63,8 @@ int bstrtomaxlen_utf8(bstr_t *, bstr_t *, int, int);
 int bstrlimitlines(bstr_t *, bstr_t *, int);
 int bstrremhtml(bstr_t *, bstr_t *);
 
+int burldecode(const char *, bstr_t *);
+
 int xfree(char **);
 int xstrcmp(const char *, const char *);
 int xstrncmp(const char *, const char *, size_t);

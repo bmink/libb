@@ -1245,3 +1245,71 @@ bstrcasecmp(bstr_t *bstr, const char *str)
 }
 
 
+int
+burldecode(const char *enc, bstr_t *dec)
+{
+	const char	*cur;
+	bstr_t		*tmp;
+	int		err;
+	int		incodepos;
+	char		codebuf[3];
+	int		val;
+	int		ret;
+
+	if(!enc || !dec)
+		return EINVAL;
+
+	err = 0;
+	tmp = NULL;
+
+	/* We put the results in a temp place, so we can bail out cleanly
+	 * (without updating dec) on an error */
+	tmp = binit();
+	if(tmp == NULL)
+		return ENOMEM;
+		
+	incodepos = 0;
+	for(cur = enc; *cur; ++cur) {
+		if(incodepos == 0) {
+			if(*cur != '%') {
+				bputc(tmp, *cur);	
+				continue;
+			} else {
+				incodepos = 1;
+				memset(codebuf, 0, 3);
+			}
+		} else {
+			codebuf[incodepos - 1] = *cur;
+			++incodepos;
+
+			if(incodepos > 2) {
+
+				ret = sscanf(codebuf, "%x", &val);
+				if(ret != 1) {
+					err = ENOEXEC;
+					goto end_label;
+				}
+	
+				if(val < 0 || val > 255) {
+					err = ERANGE;
+					goto end_label;
+				}
+
+				bputc(tmp, (char) val);	
+				
+				incodepos = 0;
+			}
+			
+		}
+	}
+
+end_label:
+
+	if(err == 0) {
+		bstrcat(dec, bget(tmp));
+	}
+
+	buninit(&tmp);
+
+	return err;
+}
