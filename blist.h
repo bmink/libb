@@ -26,7 +26,7 @@ blist_t *blist_init(void);
  * The list should be cleared up by something like:
  * while(list->bl_cnt > 0) {
  *         elem = (elem_t *) blist_rpop(list);
- *         /* Uninit and free elem */
+ *         // Uninit and free elem
  * }
  * blist_uninit(&list);
  *

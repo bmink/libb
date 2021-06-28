@@ -81,8 +81,11 @@ bcurl_wcallback(void *buffer, size_t size, size_t nmemb, void *userdata)
 }
 
 
+/* For when we need to add options to a curl call.
+ * Add further option arguments to this function as needed */
 int
-bcurl_get(const char *url, bstr_t **docp)
+bcurl_get_opts(const char *url, bstr_t **docp, const char *user,
+	const char *passw)
 {
 	CURL	*mycurl;
 	long	respcode;
@@ -181,6 +184,13 @@ end_label:
 		buninit(&buf);
 
 	return err;
+}
+
+ 
+int
+bcurl_get(const char *url, bstr_t **docp)
+{
+	return bcurl_get_opts(url, docp, NULL, NULL);
 }
 
 
