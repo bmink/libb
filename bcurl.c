@@ -84,7 +84,7 @@ bcurl_wcallback(void *buffer, size_t size, size_t nmemb, void *userdata)
 /* For when we need to add options to a curl call.
  * Add further option arguments to this function as needed */
 int
-bcurl_get_opts(const char *url, bstr_t **docp, const char *user,
+bcurl_get_opts(const char *url, bstr_t **docp, const char *usern,
 	const char *passw)
 {
 	CURL	*mycurl;
@@ -147,6 +147,28 @@ bcurl_get_opts(const char *url, bstr_t **docp, const char *user,
 		    curl_easy_strerror(ret));
 		err = ENOEXEC;
 		goto end_label;
+	}
+
+	if(!xstrempty(usern)) {
+		ret = curl_easy_setopt(mycurl, CURLOPT_USERNAME,
+		    (void *)usern);
+		if(ret != 0) {
+			blogf("Could not set user name: %s\n",
+			    curl_easy_strerror(ret));
+			err = ENOEXEC;
+			goto end_label;
+		}
+	}
+
+	if(!xstrempty(passw)) {
+		ret = curl_easy_setopt(mycurl, CURLOPT_PASSWORD,
+		    (void *)passw);
+		if(ret != 0) {
+			blogf("Could not set password: %s\n",
+			    curl_easy_strerror(ret));
+			err = ENOEXEC;
+			goto end_label;
+		}
 	}
 
 	ret = curl_easy_perform(mycurl);
