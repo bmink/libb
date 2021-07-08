@@ -585,3 +585,39 @@ end_label:
 
 	return err;
 }
+
+
+int
+bstrcat_field(bstr_t *bstr, const char *fieldn, const char *val)
+{
+	int	err;
+	int	ret;
+
+	if(bstr == NULL || xstrempty(fieldn) || val == NULL)
+		return EINVAL;
+
+	err = 0;
+
+	if(!bstrempty(bstr))
+		bstrcat(bstr, "&");
+
+	ret = bstrcat_urlenc(bstr, fieldn);
+	if(ret != 0) {
+		blogf("Could not add field name\n");
+		err = ret;
+		goto end_label;
+	}
+
+	bstrcat(bstr, "=");
+
+	ret = bstrcat_urlenc(bstr, val);
+	if(ret != 0) {
+		blogf("Could not add value\n");
+		err = ret;
+		goto end_label;
+	}
+
+end_label:
+
+	return err;
+}

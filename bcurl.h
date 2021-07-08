@@ -19,6 +19,11 @@ int bcurl_put_opts(const char *, bstr_t *, bstr_t **, const char *,
 	const char *);
 int bcurl_put(const char *, bstr_t *, bstr_t **);
 
+int bcurl_post_opts(const char *, bstr_t *, bstr_t **, const char *,
+	const char *);
+int bcurl_post(const char *, bstr_t *, bstr_t **);
+
+
 int bstrcat_urlenc(bstr_t *, const char *);
 int bstrcat_urlenc_field(bstr_t *, const char *, const char *);
 
