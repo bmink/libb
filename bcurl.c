@@ -245,7 +245,8 @@ bcurl_rcallback(char *buf, size_t size, size_t nitems, void *userdata)
 
 
 int
-bcurl_put(const char *url, bstr_t *putdata, bstr_t **docp)
+bcurl_put_opts(const char *url, bstr_t *putdata, bstr_t **docp,
+	const char *usern, const char *passw)
 {
 	/* NOTE: uploading non-empty putdata is untested, so expect to find
 	 * issues when using for the first time. */
@@ -384,6 +385,13 @@ end_label:
 		buninit(&buf);
 
 	return err;
+}
+
+
+int
+bcurl_put(const char *url, bstr_t *putdata, bstr_t **docp)
+{
+	return bcurl_put_opts(url, putdata, docp, NULL, NULL);
 }
 
 

@@ -14,6 +14,9 @@ int bcurl_header_add(const char *);
 
 int bcurl_get_opts(const char *, bstr_t **, const char *, const char *);
 int bcurl_get(const char *, bstr_t **);
+
+int bcurl_put_opts(const char *, bstr_t *, bstr_t **, const char *,
+	const char *);
 int bcurl_put(const char *, bstr_t *, bstr_t **);
 
 int bstrcat_urlenc(bstr_t *, const char *);
