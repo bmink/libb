@@ -81,8 +81,6 @@ bcurl_wcallback(void *buffer, size_t size, size_t nmemb, void *userdata)
 }
 
 
-/* For when we need to add options to a curl call.
- * Add further option arguments to this function as needed */
 int
 bcurl_get_opts(const char *url, bstr_t **docp, const char *usern,
 	const char *passw)
@@ -392,6 +390,155 @@ int
 bcurl_put(const char *url, bstr_t *putdata, bstr_t **docp)
 {
 	return bcurl_put_opts(url, putdata, docp, NULL, NULL);
+}
+
+
+int
+bcurl_post_opts(const char *url, bstr_t *data, bstr_t **docp,
+	const char *usern, const char *passw)
+{
+	CURL	*mycurl;
+	long	respcode;
+	bstr_t	*buf;
+	int	ret;
+	int	err;
+
+	err = 0;
+	mycurl = NULL;
+	buf = NULL;
+
+	if(xstrempty(url) || docp == NULL || bstrempty(data)) {
+		blogf("Bad arguments");
+		return EINVAL;
+	}
+
+	buf = binit();
+	if(buf == NULL) {
+		blogf("Could not initialize buffer\n");
+		err = ENOMEM;
+		goto end_label;
+	}
+
+	mycurl = curl_easy_init();
+	if(mycurl == NULL) {
+		blogf("Could not initialize libcurl_easy\n");
+		err = ENOEXEC;
+		goto end_label;
+	}
+
+	ret = curl_easy_setopt(mycurl, CURLOPT_URL, url);
+	if(ret != 0) {
+		blogf("Could not set URL in libcurl: %s\n",
+		    curl_easy_strerror(ret));
+		err = ENOEXEC;
+		goto end_label;
+	}
+
+	ret = curl_easy_setopt(mycurl, CURLOPT_POST, 1);
+	if(ret != 0) {
+		blogf("Could not set CURLOPT_POST in libcurl: %s\n",
+		    curl_easy_strerror(ret));
+		err = ENOEXEC;
+		goto end_label;
+	}
+
+	ret = curl_easy_setopt(mycurl, CURLOPT_POSTFIELDS, bget(data));
+	if(ret != 0) {
+		blogf("Could not set data in libcurl: %s\n",
+		    curl_easy_strerror(ret));
+		err = ENOEXEC;
+		goto end_label;
+	}
+
+	ret = curl_easy_setopt(mycurl, CURLOPT_WRITEFUNCTION, bcurl_wcallback);
+	if(ret != 0) {
+		blogf("Could not set libcurl write callback: %s\n",
+		    curl_easy_strerror(ret));
+		err = ENOEXEC;
+		goto end_label;
+	}
+
+	ret = curl_easy_setopt(mycurl, CURLOPT_WRITEDATA, (void *)buf);
+	if(ret != 0) {
+		blogf("Could not set libcurl write data: %s\n",
+		    curl_easy_strerror(ret));
+		err = ENOEXEC;
+		goto end_label;
+	}
+
+	ret = curl_easy_setopt(mycurl, CURLOPT_HTTPHEADER,
+	    (void *)bcurl_headers);
+	if(ret != 0) {
+		blogf("Could not set custom headers: %s\n",
+		    curl_easy_strerror(ret));
+		err = ENOEXEC;
+		goto end_label;
+	}
+
+	if(!xstrempty(usern)) {
+		ret = curl_easy_setopt(mycurl, CURLOPT_USERNAME,
+		    (void *)usern);
+		if(ret != 0) {
+			blogf("Could not set user name: %s\n",
+			    curl_easy_strerror(ret));
+			err = ENOEXEC;
+			goto end_label;
+		}
+	}
+
+	if(!xstrempty(passw)) {
+		ret = curl_easy_setopt(mycurl, CURLOPT_PASSWORD,
+		    (void *)passw);
+		if(ret != 0) {
+			blogf("Could not set password: %s\n",
+			    curl_easy_strerror(ret));
+			err = ENOEXEC;
+			goto end_label;
+		}
+	}
+
+	ret = curl_easy_perform(mycurl);
+	if(ret != 0) {
+		blogf("Could not perform libcurl call: %s\n",
+		    curl_easy_strerror(ret));
+		err = ENOEXEC;
+		goto end_label;
+	}
+
+	ret = curl_easy_getinfo(mycurl, CURLINFO_RESPONSE_CODE, &respcode);
+	if(ret != 0) {
+	blogf("Could not get response code from libcurl:"
+		" %s\n", curl_easy_strerror(ret));
+		err = ENOEXEC;
+		goto end_label;
+	}
+
+	if(respcode != HTTP_RESP_OK) {
+		blogf("Error response code received: %ld\n", respcode);
+		err = ENOEXEC;
+		goto end_label;
+	}
+
+	*docp = buf;
+
+end_label:
+
+	if(mycurl != NULL) {
+		curl_easy_cleanup(mycurl);
+		mycurl = NULL;
+	}
+
+	if(err != 0 && buf != NULL)
+		buninit(&buf);
+
+	return err;
+}
+
+ 
+int
+bcurl_post(const char *url, bstr_t *data, bstr_t **docp)
+{
+	return bcurl_post_opts(url, data, docp, NULL, NULL);
 }
 
 
