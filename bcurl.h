@@ -17,5 +17,6 @@ int bcurl_get(const char *, bstr_t **);
 int bcurl_put(const char *, bstr_t *, bstr_t **);
 
 int bstrcat_urlenc(bstr_t *, const char *);
+int bstrcat_urlenc_field(bstr_t *, const char *, const char *);
 
 #endif
