@@ -745,7 +745,7 @@ xstrstr(const char *haystack, const char *needle)
 
 
 int
-xstcaserstr(const char *haystack, const char *needle)
+xstrcasestr(const char *haystack, const char *needle)
 {
 	/* libc's strcasestr returns a char * containing either a pointer to the
 	 * first occurrence of needle, or NULL if needle wasn't found.
@@ -1313,3 +1313,67 @@ end_label:
 
 	return err;
 }
+
+
+int
+_bstrrepl(bstr_t *bstr, const char *search, const char *repl,
+	int ignorecase)
+{
+	/* Replaces all occurrenes of search with repl */
+	if(bstr == NULL || xstrempty(search) || xstrempty(repl)) {
+		return EINVAL;
+	}
+
+	bstr_t		*newstr;
+	int		idx;
+	const char	*val;
+	int		i;
+
+	newstr = binit();
+	if(newstr == NULL)
+		return ENOMEM;
+
+	while(1) {
+		val = bget(bstr);
+
+		idx = ignorecase ? xstrstr(val, search) :
+		    xstrcasestr(val, search);
+
+		if(idx == -1) {
+			/* No more occurrences found. */
+			bstrcat(newstr, val);
+			break;
+		}
+
+		if(idx > 0) {
+			for(i = 0; i < idx; ++i) {
+				bputc(newstr, val[i]);
+			}
+			
+			bstrchopl(bstr, idx);
+		}
+		bstrcat(newstr, repl);
+		bstrchopl(bstr, xstrlen(search));
+	}
+
+	bclear(bstr);
+	bstrcat(bstr, bget(newstr));
+
+	buninit(&newstr);
+
+	return 0;
+}
+
+
+int
+bstrrepl(bstr_t *bstr, const char *search, const char *repl)
+{
+	return _bstrrepl(bstr, search, repl, 0);
+}
+
+int
+bstrcaserepl(bstr_t *bstr, const char *search, const char *repl)
+{
+	return _bstrrepl(bstr, search, repl, 1);
+}
+

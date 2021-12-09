@@ -51,6 +51,8 @@ int bstrchop(bstr_t *, int);
 int bstrchopl(bstr_t *, int);
 int bstrchopnewline(bstr_t *);
 int bstrchopwspc(bstr_t *);
+int bstrrepl(bstr_t *, const char *, const char *);
+int bstrcaserepl(bstr_t *, const char *, const char *);
 
 int btofile(const char *, bstr_t *);
 int btofilep(FILE *, bstr_t *);
