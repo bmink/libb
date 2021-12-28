@@ -1,10 +1,8 @@
-
 A collection of helpful things for the C programming language that I wrote
-over the years and use in most of my projects.
-
-* bstr.\[ch\] provides bstr_t, a convenient and safe "string" entity that manages
-  its own memory growth. Most conveniently, it can be appended to via a convenient
-  bprintf() call which supports the usual format string specifications.
+over the years and use in most of my projects.  * bstr.\[ch\] provides
+bstr_t, a convenient and safe "string" entity that manages its own memory
+growth. Most conveniently, it can be appended to via a bprintf() call which
+supports the usual format string specifications.
 
 * bstr.\[ch\] also provides safe versions of many standard string manipulation
   functions. These are prepended with an 'x'. So there's xstrlen, xstrcmp, etc.
