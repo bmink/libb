@@ -77,7 +77,7 @@ blog_logf(const char *func, const char *fmt, ...)
 		return;
 	}
 
-	bprintf(nfmt, "<%s> %s", func, fmt);
+	bprintf(nfmt, "%s(): %s", func, fmt);
 
 	va_start(arglist, fmt);
 #ifdef __APPLE__
@@ -87,7 +87,7 @@ blog_logf(const char *func, const char *fmt, ...)
 	if(logmsg != NULL) {
 		bvprintf(logmsg, bget(nfmt), arglist);
 		if(!bstrempty(logmsg))
-			os_log(OS_LOG_DEFAULT, "%{public}s", bget(logmsg));
+			os_log_info(OS_LOG_DEFAULT, "%{public}s", bget(logmsg));
 	}
 #else
 	vsyslog(LOG_NOTICE, bget(nfmt), arglist);
