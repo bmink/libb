@@ -3,21 +3,23 @@ over the years and use in most of my projects.
 
 * bstr.\[ch\] provides bstr_t, a convenient and safe "string" entity that
 manages its own memory growth. Most conveniently, it can be appended to via a
-bprintf() call which supports the usual format string specifications.
+bprintf() call which supports the usual format string specifications. Many
+other convenient utilities are provided that make string manipulation a breeze.
 
-* bstr.\[ch\] also provides safe versions of many standard string manipulation
-  functions. These are prepended with an 'x'. So there's xstrlen, xstrcmp, etc.
+* bstr.\[ch\] also provides safe(r) versions of libc's standard string
+manipulation functions. These are prepended with an 'x'. So there's xstrlen,
+xstrcmp and so on. They don't crash on NULL input and provide other safeguards
+as well.
 
-* barr.\[ch\] is an array library. It manages its own memory and growth. In addition
-  to adding and accessing elements, it can be sorted and searched easily.
+* barr.\[ch\] is an array library. It manages its own memory and growth. In addition to adding and accessing elements, these arrays can be sorted and searched
+easily.
 
 * blist.\[ch\] provides a linked list / queue.
 
 * btime.[ch] contains utilities for time stucture (time_t, struct timeval,
   struct timespec) manipulation, comparison, addition/substraction etc.
 
-* blog.\[ch\] is a logging utility. Uses syslog most anywhere, but on Mac OS X, it
-  uses the new ASL services.
+* blog.\[ch\] is a logging utility. Uses syslog most anywhere, but on Mac OS X, it uses the new ASL services.
 
 * bcurl.\[ch\] is a wrapper around libcurl. Documents can be fetched via a single call returning the response in a bstr_t. GET, POST and PUT are supported, as
 is sending parameters, custom headers and custom user-agent strings. A utility
