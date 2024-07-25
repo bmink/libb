@@ -87,7 +87,7 @@ blog_logf(const char *func, const char *fmt, ...)
 	if(logmsg != NULL) {
 		bvprintf(logmsg, bget(nfmt), arglist);
 		if(!bstrempty(logmsg))
-			os_log(OS_LOG_DEFAULT, "%s", bget(logmsg));
+			os_log(OS_LOG_DEFAULT, "%{public}s", bget(logmsg));
 	}
 #else
 	vsyslog(LOG_NOTICE, bget(nfmt), arglist);
