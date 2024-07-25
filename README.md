@@ -1,8 +1,9 @@
 A collection of helpful things for the C programming language that I wrote
-over the years and use in most of my projects.  * bstr.\[ch\] provides
-bstr_t, a convenient and safe "string" entity that manages its own memory
-growth. Most conveniently, it can be appended to via a bprintf() call which
-supports the usual format string specifications.
+over the years and use in most of my projects.
+
+* bstr.\[ch\] provides bstr_t, a convenient and safe "string" entity that
+manages its own memory growth. Most conveniently, it can be appended to via a
+bprintf() call which supports the usual format string specifications.
 
 * bstr.\[ch\] also provides safe versions of many standard string manipulation
   functions. These are prepended with an 'x'. So there's xstrlen, xstrcmp, etc.
@@ -18,8 +19,9 @@ supports the usual format string specifications.
 * blog.\[ch\] is a logging utility. Uses syslog most anywhere, but on Mac OS X, it
   uses the new ASL services.
 
-* bcurl.\[ch\] is a wrapper around libcurl. Documents can be fetched via a single call
-  returning the response in a bstr_t.
+* bcurl.\[ch\] is a wrapper around libcurl. Documents can be fetched via a single call returning the response in a bstr_t. GET, POST and PUT are supported, as
+is sending parameters, custom headers and custom user-agent strings. A utility
+to conveniently urlencode post data is also provided.
   
 * bfs.\[ch\] contains file system related utilities.
 
