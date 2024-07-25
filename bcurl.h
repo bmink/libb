@@ -12,6 +12,8 @@ int bcurl_uninit(void);
 int bcurl_header_clearall(void);
 int bcurl_header_add(const char *);
 
+int bcurl_set_useragent(const char *);
+
 int bcurl_get_opts(const char *, bstr_t **, const char *, const char *);
 int bcurl_get(const char *, bstr_t **);
 

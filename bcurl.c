@@ -7,19 +7,37 @@
 #define HTTP_RESP_OK	200
 
 struct curl_slist	*bcurl_headers;
+bstr_t			*bcurl_useragent;
 
 int
 bcurl_init(void)
 {
 	int	ret;
+	int	err;
+
+	err = 0;
 
 	ret = curl_global_init(CURL_GLOBAL_ALL);
 
 	if(ret != 0) {
 		blogf("curl_global_init() returned error");
-	} 
+		err = ret;
+		goto end_label;
+	}
 
-	return ret;
+	bcurl_useragent = binit();
+	if(bcurl_useragent == NULL) {
+		blogf("Couldn't initialize bcurl_useragent");
+		err = ENOMEM;
+		goto end_label;
+	}
+
+end_label:
+	if(err != 0) {
+		bcurl_uninit();
+	}
+
+	return err;
 }
 
 
@@ -27,10 +45,13 @@ int
 bcurl_uninit(void)
 {
 	bcurl_header_clearall();
+	buninit(&bcurl_useragent);
 	curl_global_cleanup();
+
 		
 	return 0;
 }
+
 
 int
 bcurl_header_add(const char *hdr)
@@ -48,8 +69,9 @@ bcurl_header_add(const char *hdr)
 	return 0;
 }
 
+
 int
-bcurl_header_clearall()
+bcurl_header_clearall(void)
 {
 	if(bcurl_headers == NULL)
 		return 0;
@@ -59,6 +81,23 @@ bcurl_header_clearall()
 
 	return 0;	
 }
+
+
+int
+bcurl_set_useragent(const char *ua)
+{
+	if(xstrempty(ua))
+		return EINVAL;
+
+	if(bcurl_useragent == NULL)
+		return ENOEXEC;
+
+	bclear(bcurl_useragent);
+	bstrcat(bcurl_useragent, ua);
+
+	return 0;
+}
+
 
 static size_t
 bcurl_wcallback(void *buffer, size_t size, size_t nmemb, void *userdata)
@@ -163,6 +202,17 @@ bcurl_get_opts(const char *url, bstr_t **docp, const char *usern,
 		    (void *)passw);
 		if(ret != 0) {
 			blogf("Could not set password: %s\n",
+			    curl_easy_strerror(ret));
+			err = ENOEXEC;
+			goto end_label;
+		}
+	}
+
+	if(!bstrempty(bcurl_useragent)) {
+		ret = curl_easy_setopt(mycurl, CURLOPT_USERAGENT,
+		    (void *) bget(bcurl_useragent));
+		if(ret != 0) {
+			blogf("Could not set user agent: %s\n",
 			    curl_easy_strerror(ret));
 			err = ENOEXEC;
 			goto end_label;
@@ -348,6 +398,17 @@ bcurl_put_opts(const char *url, bstr_t *putdata, bstr_t **docp,
 		goto end_label;
 	}
 
+	if(!bstrempty(bcurl_useragent)) {
+		ret = curl_easy_setopt(mycurl, CURLOPT_USERAGENT,
+		    (void *) bget(bcurl_useragent));
+		if(ret != 0) {
+			blogf("Could not set user agent: %s\n",
+			    curl_easy_strerror(ret));
+			err = ENOEXEC;
+			goto end_label;
+		}
+	}
+
 	ret = curl_easy_perform(mycurl);
 	if(ret != 0) {
 		blogf("Could not perform libcurl call: %s\n",
@@ -497,6 +558,17 @@ bcurl_post_opts(const char *url, bstr_t *data, bstr_t **docp,
 		}
 	}
 
+	if(!bstrempty(bcurl_useragent)) {
+		ret = curl_easy_setopt(mycurl, CURLOPT_USERAGENT,
+		    (void *) bget(bcurl_useragent));
+		if(ret != 0) {
+			blogf("Could not set user agent: %s\n",
+			    curl_easy_strerror(ret));
+			err = ENOEXEC;
+			goto end_label;
+		}
+	}
+
 	ret = curl_easy_perform(mycurl);
 	if(ret != 0) {
 		blogf("Could not perform libcurl call: %s\n",
@@ -588,7 +660,7 @@ end_label:
 
 
 int
-bstrcat_field(bstr_t *bstr, const char *fieldn, const char *val)
+bstrcat_urlenc_field(bstr_t *bstr, const char *fieldn, const char *val)
 {
 	int	err;
 	int	ret;
