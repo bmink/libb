@@ -41,5 +41,6 @@ void *blist_lpop(blist_t *);
 void *blist_rpop(blist_t *);
 
 blelem_t *blist_getidx(blist_t *, int);
+size_t blist_cnt(blist_t *);
 
 #endif

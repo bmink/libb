@@ -181,3 +181,12 @@ blist_getidx(blist_t *bl, int idx)
 
 	return NULL;
 }
+
+
+size_t
+blist_cnt(blist_t *bl)
+{
+	if(bl == NULL)
+		return 0;
+	return bl->bl_cnt;
+}
