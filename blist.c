@@ -163,7 +163,7 @@ blist_rpop(blist_t *blist)
 }
 
 
-blelem_t *
+void *
 blist_getidx(blist_t *bl, int idx)
 {
 	int		i;
@@ -175,7 +175,7 @@ blist_getidx(blist_t *bl, int idx)
 	i = 0;
 	for(elem = bl->bl_first; elem != NULL; elem = elem->be_next) {
 		if(i == idx)
-			return elem;
+			return elem->be_data;
 		++i;
 	}
 
