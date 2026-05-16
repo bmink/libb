@@ -12,5 +12,8 @@ int buint_betw(unsigned, unsigned, int, unsigned, int);
 int blong_betw(long, long, int, long, int);
 int bulong_betw(unsigned long, unsigned long, int, unsigned long, int);
 
+int bint_sortcmp_asc(const void *, const void *);
+int bint_sortcmp_desc(const void *, const void *);
+
 
 #endif

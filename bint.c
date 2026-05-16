@@ -102,3 +102,24 @@ buint_betw(unsigned num, unsigned left, int left_incl,
 	return blong_betw((unsigned long) num, (unsigned long) left, left_incl,
 	    (unsigned long) right, right_incl);
 }
+
+
+int
+bint_sortcmp_asc(const void *n1, const void *n2)
+{
+	/* Comparison for standard library sort functions. Will sort in
+	 * ascending order. */
+
+	return (*(int *)n1 - *(int *)n2);
+}
+
+
+int
+bint_sortcmp_desc(const void *n1, const void *n2)
+{
+	/* Comparison for standard library sort functions. Will sort in
+	 * descending order. */
+
+	return (*(int *)n2 - *(int *)n1);
+}
+
