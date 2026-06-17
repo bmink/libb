@@ -120,6 +120,9 @@ bcurl_wcallback(void *buffer, size_t size, size_t nmemb, void *userdata)
 }
 
 
+#define BCURL_GET_TIMEOUT	10
+#define BCURL_GET_CONN_TIMEOUT	5
+
 int
 bcurl_get_opts(const char *url, bstr_t **docp, const char *usern,
 	const char *passw)
@@ -156,6 +159,24 @@ bcurl_get_opts(const char *url, bstr_t **docp, const char *usern,
 	ret = curl_easy_setopt(mycurl, CURLOPT_URL, url);
 	if(ret != 0) {
 		blogf("Could not set URL in libcurl: %s\n",
+		    curl_easy_strerror(ret));
+		err = ENOEXEC;
+		goto end_label;
+	}
+
+
+	ret = curl_easy_setopt(mycurl, CURLOPT_TIMEOUT, BCURL_GET_TIMEOUT);
+	if(ret != 0) {
+		blogf("Could not set timeout in libcurl: %s\n",
+		    curl_easy_strerror(ret));
+		err = ENOEXEC;
+		goto end_label;
+	}
+
+	ret = curl_easy_setopt(mycurl, CURLOPT_CONNECTTIMEOUT,
+	    BCURL_GET_CONN_TIMEOUT);
+	if(ret != 0) {
+		blogf("Could not set connect timeout in libcurl: %s\n",
 		    curl_easy_strerror(ret));
 		err = ENOEXEC;
 		goto end_label;
